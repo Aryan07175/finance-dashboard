@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Dashboard</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/main.css">
+  
+  <!-- Icons (Phosphor Icons - clean, professional) -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+  <div id="app" class="layout-app">
+    <!-- Sidebar Component -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <i class="ph-fill ph-infinity"></i>
+        </div>
+        <span class="brand-name">FinDash</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <span class="nav-label">Menu</span>
+          <a href="#" class="nav-item active">
+            <i class="ph ph-squares-four"></i>
+            Dashboard
+          </a>
+          <a href="#" class="nav-item">
+            <i class="ph ph-chart-line-up"></i>
+            Portfolio
+          </a>
+          <a href="#" class="nav-item">
+            <i class="ph ph-arrows-left-right"></i>
+            Transactions
+          </a>
+          <a href="#" class="nav-item">
+            <i class="ph ph-credit-card"></i>
+            Cards
+          </a>
+        </div>
+        
+        <div class="nav-group">
+          <span class="nav-label">Settings</span>
+          <a href="#" class="nav-item">
+            <i class="ph ph-gear"></i>
+            Preferences
+          </a>
+          <a href="#" class="nav-item">
+            <i class="ph ph-shield-check"></i>
+            Security
+          </a>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar">AJ</div>
+          <div class="user-info">
+            <span class="user-name">Aryan J.</span>
+            <span class="user-plan">Pro Plan</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header Component -->
+      <header class="top-header">
+        <div class="header-search">
+          <i class="ph ph-magnifying-glass search-icon"></i>
+          <input type="text" placeholder="Search transactions, cards, or help..." class="search-input">
+        </div>
+        <div class="header-actions">
+          <button class="action-btn" aria-label="Notifications">
+            <i class="ph ph-bell"></i>
+            <span class="badge"></span>
+          </button>
+          <button class="btn-primary">
+            <i class="ph ph-plus"></i>
+            Send Money
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <div class="dashboard-view">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Welcome back, here's your financial overview.</p>
+          </div>
+          <div class="date-picker">
+            <button class="btn-secondary">
+              <i class="ph ph-calendar-blank"></i>
+              Last 30 Days
+              <i class="ph ph-caret-down"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <section class="metric-cards-grid" id="metrics-container">
+          <!-- Populated by JS -->
+        </section>
+
+        <div class="dashboard-main-grid">
+          <!-- Charts Section -->
+          <section class="chart-section card">
+            <div class="card-header">
+              <h2 class="card-title">Cash Flow</h2>
+              <button class="btn-icon"><i class="ph ph-dots-three-outline"></i></button>
+            </div>
+            <div class="card-body">
+              <div class="chart-placeholder">
+                <!-- Using a simple CSS representation for now -->
+                <div class="bar-chart">
+                  <div class="bar-group"><div class="bar in" style="height: 60%"></div><div class="bar out" style="height: 40%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 80%"></div><div class="bar out" style="height: 30%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 50%"></div><div class="bar out" style="height: 70%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 90%"></div><div class="bar out" style="height: 20%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 70%"></div><div class="bar out" style="height: 50%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 40%"></div><div class="bar out" style="height: 30%"></div></div>
+                  <div class="bar-group"><div class="bar in" style="height: 85%"></div><div class="bar out" style="height: 60%"></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Transactions Section -->
+          <section class="transactions-section card">
+            <div class="card-header">
+              <h2 class="card-title">Recent Transactions</h2>
+              <a href="#" class="link-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+              <div class="transaction-table-container">
+                <table class="transaction-table">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Category</th>
+                      <th>Date</th>
+                      <th class="text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactions-container">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="scripts/main.js"></script>
+</body>
+</html>
