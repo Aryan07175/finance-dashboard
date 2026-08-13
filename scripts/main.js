@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboard();
   initNavigation();
   initPortfolio();
+  initTransactions();
 });
 
 function initDashboard() {
@@ -373,5 +374,153 @@ function initPerfTabs() {
       tab.classList.add('active');
       renderLineChart(tab.getAttribute('data-range'));
     });
+  });
+}
+
+/* =====================
+   TRANSACTIONS PAGE
+   ===================== */
+const allTransactions = [
+  { id: 'tx-1',  name: 'Apple Store',         merchant: 'Technology',       category: 'Electronics',      date: 'Nov 01, 2023', amount: -1299.00, icon: 'ph-apple-logo',    status: 'completed' },
+  { id: 'tx-2',  name: 'Stripe Payout',        merchant: 'Income',           category: 'Business',         date: 'Oct 31, 2023', amount: 4500.00,  icon: 'ph-bank',          status: 'completed' },
+  { id: 'tx-3',  name: 'AWS Cloud Services',   merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 29, 2023', amount: -145.20,  icon: 'ph-cloud',         status: 'completed' },
+  { id: 'tx-4',  name: 'Starbucks',            merchant: 'Food & Dining',    category: 'Coffee',           date: 'Oct 28, 2023', amount: -6.50,   icon: 'ph-coffee',        status: 'completed' },
+  { id: 'tx-5',  name: 'Upwork Escrow',        merchant: 'Income',           category: 'Freelance',        date: 'Oct 27, 2023', amount: 850.00,   icon: 'ph-briefcase',     status: 'completed' },
+  { id: 'tx-6',  name: 'Netflix',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 25, 2023', amount: -15.99,  icon: 'ph-television',    status: 'completed' },
+  { id: 'tx-7',  name: 'Uber',                 merchant: 'Transport',        category: 'Transport',        date: 'Oct 24, 2023', amount: -23.40,  icon: 'ph-car',           status: 'completed' },
+  { id: 'tx-8',  name: 'GitHub Copilot',       merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 22, 2023', amount: -19.00,  icon: 'ph-github-logo',   status: 'completed' },
+  { id: 'tx-9',  name: 'Freelance Invoice #8', merchant: 'Income',           category: 'Freelance',        date: 'Oct 20, 2023', amount: 2200.00,  icon: 'ph-receipt',       status: 'completed' },
+  { id: 'tx-10', name: 'McDonald\'s',          merchant: 'Food & Dining',    category: 'Food & Dining',    date: 'Oct 19, 2023', amount: -12.30,  icon: 'ph-hamburger',     status: 'completed' },
+  { id: 'tx-11', name: 'Spotify',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 18, 2023', amount: -9.99,   icon: 'ph-music-note',    status: 'completed' },
+  { id: 'tx-12', name: 'Google Cloud',         merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 17, 2023', amount: -78.50,  icon: 'ph-google-logo',   status: 'completed' },
+  { id: 'tx-13', name: 'Client Payment',       merchant: 'Income',           category: 'Business',         date: 'Oct 15, 2023', amount: 3500.00,  icon: 'ph-handshake',     status: 'completed' },
+  { id: 'tx-14', name: 'Pharmacy',             merchant: 'Healthcare',       category: 'Healthcare',       date: 'Oct 13, 2023', amount: -45.00,  icon: 'ph-first-aid',     status: 'pending'   },
+  { id: 'tx-15', name: 'Amazon Purchase',      merchant: 'Shopping',         category: 'Electronics',      date: 'Oct 11, 2023', amount: -234.99, icon: 'ph-package',       status: 'completed' },
+  { id: 'tx-16', name: 'Zoom Subscription',    merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 09, 2023', amount: -16.99,  icon: 'ph-video-camera',  status: 'completed' },
+  { id: 'tx-17', name: 'Salary Deposit',       merchant: 'Income',           category: 'Business',         date: 'Oct 01, 2023', amount: 7500.00,  icon: 'ph-money',         status: 'completed' },
+  { id: 'tx-18', name: 'Electricity Bill',     merchant: 'Utilities',        category: 'Food & Dining',    date: 'Sep 30, 2023', amount: -120.00, icon: 'ph-lightning',     status: 'completed' },
+  { id: 'tx-19', name: 'Gym Membership',       merchant: 'Health',           category: 'Healthcare',       date: 'Sep 28, 2023', amount: -50.00,  icon: 'ph-barbell',       status: 'failed'    },
+  { id: 'tx-20', name: 'Airbnb',               merchant: 'Travel',           category: 'Transport',        date: 'Sep 25, 2023', amount: -380.00, icon: 'ph-house',         status: 'completed' },
+];
+
+const TX_PAGE_SIZE = 8;
+let txCurrentPage = 1;
+let txFiltered = [...allTransactions];
+
+function initTransactions() {
+  renderTxSummary();
+  renderFullTxTable();
+  initTxFilters();
+}
+
+function renderTxSummary() {
+  const container = document.getElementById('tx-summary-container');
+  if (!container) return;
+  const income = allTransactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expenses = allTransactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const net = income - expenses;
+  const fmt = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+  const metrics = [
+    { title: 'Total Income', value: fmt(income), trend: 'up', trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-up', colorClass: 'green' },
+    { title: 'Total Expenses', value: fmt(expenses), trend: 'down', trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-down', colorClass: 'purple' },
+    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: '', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
+  ];
+  let html = '';
+  metrics.forEach(metric => {
+    const trendClass = metric.trend === 'up' ? 'trend-up' : 'trend-down';
+    const trendIcon = metric.trend === 'up' ? 'ph-arrow-up-right' : 'ph-arrow-down-right';
+    html += `<div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-icon ${metric.colorClass}"><i class="ph ${metric.iconClass}"></i></div>
+        <div class="metric-title">${metric.title}</div>
+      </div>
+      <div class="metric-value">${metric.value}</div>
+      <div class="metric-trend">
+        <span class="${trendClass}"><i class="ph ${trendIcon}"></i> ${metric.trendValue}</span>
+        <span class="trend-text">${metric.trendText}</span>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderFullTxTable() {
+  const tbody = document.getElementById('full-tx-body');
+  const pagination = document.getElementById('tx-pagination');
+  if (!tbody) return;
+
+  const start = (txCurrentPage - 1) * TX_PAGE_SIZE;
+  const page = txFiltered.slice(start, start + TX_PAGE_SIZE);
+  const totalPages = Math.ceil(txFiltered.length / TX_PAGE_SIZE);
+
+  if (page.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ph ph-magnifying-glass"></i><p>No transactions match your filters.</p></div></td></tr>`;
+  } else {
+    let html = '';
+    page.forEach(tx => {
+      const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', signDisplay: 'always' }).format(tx.amount);
+      const amtClass = tx.amount > 0 ? 'amount-positive' : 'amount-negative';
+      html += `<tr>
+        <td><div class="tx-item">
+          <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
+          <div class="tx-details"><span class="tx-name">${tx.name}</span><span class="tx-merchant">${tx.merchant}</span></div>
+        </div></td>
+        <td><span class="tx-category">${tx.category}</span></td>
+        <td><span class="tx-date">${tx.date}</span></td>
+        <td><span class="status-badge ${tx.status}">${tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}</span></td>
+        <td class="text-right"><span class="tx-amount ${amtClass}">${fmt}</span></td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  // Pagination
+  if (pagination) {
+    const startIdx = txFiltered.length === 0 ? 0 : start + 1;
+    const endIdx = Math.min(start + TX_PAGE_SIZE, txFiltered.length);
+    pagination.innerHTML = `
+      <span>Showing ${startIdx}–${endIdx} of ${txFiltered.length} transactions</span>
+      <div class="pagination-btns">
+        <button class="page-btn" id="prev-page" ${txCurrentPage === 1 ? 'disabled' : ''}><i class="ph ph-caret-left"></i></button>
+        ${Array.from({ length: totalPages }, (_, i) => `<button class="page-btn ${i + 1 === txCurrentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`).join('')}
+        <button class="page-btn" id="next-page" ${txCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''}><i class="ph ph-caret-right"></i></button>
+      </div>`;
+
+    document.getElementById('prev-page')?.addEventListener('click', () => { txCurrentPage--; renderFullTxTable(); });
+    document.getElementById('next-page')?.addEventListener('click', () => { txCurrentPage++; renderFullTxTable(); });
+    pagination.querySelectorAll('[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => { txCurrentPage = parseInt(btn.getAttribute('data-page')); renderFullTxTable(); });
+    });
+  }
+}
+
+function applyTxFilters() {
+  const search = document.getElementById('tx-search-input')?.value.toLowerCase() || '';
+  const typeFilter = document.getElementById('tx-type-filter')?.value || 'all';
+  const catFilter = document.getElementById('tx-category-filter')?.value || 'all';
+
+  txFiltered = allTransactions.filter(tx => {
+    const matchSearch = tx.name.toLowerCase().includes(search) || tx.merchant.toLowerCase().includes(search) || tx.category.toLowerCase().includes(search);
+    const matchType = typeFilter === 'all' || (typeFilter === 'income' ? tx.amount > 0 : tx.amount < 0);
+    const matchCat = catFilter === 'all' || tx.category === catFilter;
+    return matchSearch && matchType && matchCat;
+  });
+
+  txCurrentPage = 1;
+  renderFullTxTable();
+}
+
+function initTxFilters() {
+  document.getElementById('tx-search-input')?.addEventListener('input', applyTxFilters);
+  document.getElementById('tx-type-filter')?.addEventListener('change', applyTxFilters);
+  document.getElementById('tx-category-filter')?.addEventListener('change', applyTxFilters);
+  document.getElementById('tx-clear-filters')?.addEventListener('click', () => {
+    const s = document.getElementById('tx-search-input');
+    const t = document.getElementById('tx-type-filter');
+    const c = document.getElementById('tx-category-filter');
+    if (s) s.value = '';
+    if (t) t.value = 'all';
+    if (c) c.value = 'all';
+    applyTxFilters();
   });
 }

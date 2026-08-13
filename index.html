@@ -257,12 +257,47 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Transactions</h1>
-            <p class="page-subtitle">View and filter your financial activity.</p>
+            <p class="page-subtitle">Your complete financial activity log.</p>
           </div>
+          <button class="btn-secondary">
+            <i class="ph ph-download-simple"></i>
+            Export CSV
+          </button>
         </div>
-        <section class="transactions-section card">
-          <div class="card-header">
-            <h2 class="card-title">All Transactions</h2>
+
+        <!-- Summary Stats -->
+        <section class="metric-cards-grid" id="tx-summary-container"></section>
+
+        <!-- Filters + Table -->
+        <div class="card">
+          <div class="card-header tx-filters-bar">
+            <div class="tx-search-wrap">
+              <i class="ph ph-magnifying-glass tx-search-icon"></i>
+              <input type="text" id="tx-search-input" class="tx-search" placeholder="Search transactions...">
+            </div>
+            <div class="tx-filter-group">
+              <select id="tx-type-filter" class="filter-select">
+                <option value="all">All Types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+              <select id="tx-category-filter" class="filter-select">
+                <option value="all">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Business">Business</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Coffee">Coffee</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Food &amp; Dining">Food &amp; Dining</option>
+                <option value="Transport">Transport</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Entertainment">Entertainment</option>
+              </select>
+              <button id="tx-clear-filters" class="btn-secondary" style="white-space:nowrap;">
+                <i class="ph ph-funnel-x"></i>
+                Clear
+              </button>
+            </div>
           </div>
           <div class="card-body p-0">
             <div class="transaction-table-container">
@@ -272,16 +307,16 @@
                     <th>Transaction</th>
                     <th>Category</th>
                     <th>Date</th>
+                    <th>Status</th>
                     <th class="text-right">Amount</th>
                   </tr>
                 </thead>
-                <tbody id="all-transactions-container">
-                  <!-- Populated by JS -->
-                </tbody>
+                <tbody id="full-tx-body"></tbody>
               </table>
             </div>
+            <div class="tx-pagination" id="tx-pagination"></div>
           </div>
-        </section>
+        </div>
       </div>
 
       <!-- Cards View -->
