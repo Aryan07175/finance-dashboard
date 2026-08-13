@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function initDashboard() {
   renderMetricCards();
   renderTransactions('transactions-container');
-  renderTransactions('all-transactions-container');
 }
 
 function initNavigation() {
