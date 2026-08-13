@@ -50,7 +50,9 @@
 }
 
 .view-section.active {
-  display: block;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .page-header {
@@ -266,7 +268,6 @@
   }
   
   .sidebar .brand-name, 
-  .sidebar .nav-item, 
   .sidebar .nav-label,
   .sidebar .user-info {
     display: none;
@@ -275,6 +276,8 @@
   .sidebar .nav-item {
     justify-content: center;
     padding: var(--spacing-3);
+    font-size: 0; /* Hides the text node securely */
+    gap: 0;
   }
   
   .sidebar .nav-item i {
@@ -282,7 +285,7 @@
     font-size: 1.5rem;
   }
   
-  .top-header, .dashboard-view {
+  .top-header, .main-content > .dashboard-view {
     padding-left: var(--spacing-4);
     padding-right: var(--spacing-4);
   }
