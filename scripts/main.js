@@ -317,7 +317,8 @@ function renderLineChart(range) {
   for (let i = 0; i <= yTicks; i++) {
     const v = minVal + ((maxVal - minVal) * i / yTicks);
     const y = pad.top + yScale(v);
-    yAxisHTML += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#94A3B8">$${Math.round(v)}k</text>
+    const label = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(v * 1000);
+    yAxisHTML += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#94A3B8">${label}</text>
     <line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="#E2E8F0" stroke-width="1"/>`;
   }
 
