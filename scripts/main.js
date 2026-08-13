@@ -275,10 +275,14 @@ function renderDonutChart() {
 
   chart.style.background = `conic-gradient(${gradientParts.join(', ')})`;
 
-  // Inner hole
-  const hole = document.createElement('div');
-  hole.style.cssText = 'position:absolute;width:110px;height:110px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-  chart.appendChild(hole);
+  // C2 FIX: Clear any previously appended hole before re-appending
+  const existingHole = chart.querySelector('.donut-hole');
+  if (!existingHole) {
+    const hole = document.createElement('div');
+    hole.className = 'donut-hole';
+    hole.style.cssText = 'position:absolute;width:110px;height:110px;border-radius:50%;background:var(--color-surface);display:flex;flex-direction:column;align-items:center;justify-content:center;';
+    chart.appendChild(hole);
+  }
 
   // Legend
   let legendHTML = '';
