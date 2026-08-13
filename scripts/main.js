@@ -69,53 +69,7 @@ const mockMetrics = [
   }
 ];
 
-const mockTransactions = [
-  {
-    id: 'tx-1',
-    name: 'Apple Store',
-    merchant: 'Technology',
-    category: 'Electronics',
-    date: 'Oct 24, 2023',
-    amount: -1299.00,
-    icon: 'ph-apple-logo'
-  },
-  {
-    id: 'tx-2',
-    name: 'Stripe Payout',
-    merchant: 'Income',
-    category: 'Business',
-    date: 'Oct 23, 2023',
-    amount: 4500.00,
-    icon: 'ph-bank'
-  },
-  {
-    id: 'tx-3',
-    name: 'AWS Cloud Services',
-    merchant: 'Software',
-    category: 'Infrastructure',
-    date: 'Oct 21, 2023',
-    amount: -145.20,
-    icon: 'ph-cloud'
-  },
-  {
-    id: 'tx-4',
-    name: 'Starbucks',
-    merchant: 'Food & Dining',
-    category: 'Coffee',
-    date: 'Oct 20, 2023',
-    amount: -6.50,
-    icon: 'ph-coffee'
-  },
-  {
-    id: 'tx-5',
-    name: 'Upwork Escrow',
-    merchant: 'Income',
-    category: 'Freelance',
-    date: 'Oct 18, 2023',
-    amount: 850.00,
-    icon: 'ph-briefcase'
-  }
-];
+// C3 FIX: mockTransactions removed — dashboard now uses allTransactions (unified dataset)
 
 function renderMetricCards() {
   const container = document.getElementById('metrics-container');
@@ -152,44 +106,34 @@ function renderMetricCards() {
 function renderTransactions(containerId = 'transactions-container') {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
+
+  // C3 FIX: use unified allTransactions, show first 5 on dashboard
+  const txList = allTransactions.slice(0, 5);
   let html = '';
-  
-  mockTransactions.forEach(tx => {
+
+  txList.forEach(tx => {
     const formattedAmount = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       signDisplay: 'always'
     }).format(tx.amount);
-    
     const amountClass = tx.amount > 0 ? 'amount-positive' : 'amount-negative';
-    
     html += `
       <tr>
         <td>
           <div class="tx-item">
-            <div class="tx-icon">
-              <i class="ph ${tx.icon}"></i>
-            </div>
+            <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
             <div class="tx-details">
               <span class="tx-name">${tx.name}</span>
               <span class="tx-merchant">${tx.merchant}</span>
             </div>
           </div>
         </td>
-        <td>
-          <span class="tx-category">${tx.category}</span>
-        </td>
-        <td>
-          <span class="tx-date">${tx.date}</span>
-        </td>
-        <td class="text-right">
-          <span class="tx-amount ${amountClass}">${formattedAmount}</span>
-        </td>
-      </tr>
-    `;
+        <td><span class="tx-category">${tx.category}</span></td>
+        <td><span class="tx-date">${tx.date}</span></td>
+        <td class="text-right"><span class="tx-amount ${amountClass}">${formattedAmount}</span></td>
+      </tr>`;
   });
-  
   container.innerHTML = html;
 }
 
