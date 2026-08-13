@@ -170,7 +170,7 @@ const portfolioAssets = [
 
 const portfolioHoldings = [
   { ticker: 'AAPL', name: 'Apple Inc.', price: '$189.50', change: '+1.24%', changeDir: 'up', value: '$18,950.00', icon: 'ph-apple-logo' },
-  { ticker: 'MSFT', name: 'Microsoft Corp.', price: '$415.20', change: '+0.87%', changeDir: 'up', value: '$16,608.00', icon: 'ph-microsoft-teams-logo' },
+  { ticker: 'MSFT', name: 'Microsoft Corp.', price: '$415.20', change: '+0.87%', changeDir: 'up', value: '$16,608.00', icon: 'ph-windows-logo' },
   { ticker: 'NVDA', name: 'NVIDIA Corp.', price: '$875.00', change: '+3.12%', changeDir: 'up', value: '$14,000.00', icon: 'ph-cpu' },
   { ticker: 'BTC', name: 'Bitcoin', price: '$43,200.00', change: '-2.10%', changeDir: 'down', value: '$12,500.00', icon: 'ph-currency-btc' },
   { ticker: 'GOOGL', name: 'Alphabet Inc.', price: '$174.80', change: '+0.52%', changeDir: 'up', value: '$8,740.00', icon: 'ph-google-logo' },
@@ -303,6 +303,7 @@ function renderLineChart(range) {
   const minVal = Math.min(...data) * 0.99;
   const maxVal = Math.max(...data) * 1.01;
 
+  if (data.length <= 1) return; // M4 FIX: Guard division by zero
   const xStep = chartW / (data.length - 1);
   const yScale = (v) => chartH - ((v - minVal) / (maxVal - minVal)) * chartH;
 
@@ -360,14 +361,14 @@ const allTransactions = [
   { id: 'tx-8',  name: 'GitHub Copilot',       merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 22, 2023', amount: -19.00,  icon: 'ph-github-logo',   status: 'completed' },
   { id: 'tx-9',  name: 'Freelance Invoice #8', merchant: 'Income',           category: 'Freelance',        date: 'Oct 20, 2023', amount: 2200.00,  icon: 'ph-receipt',       status: 'completed' },
   { id: 'tx-10', name: 'McDonald\'s',          merchant: 'Food & Dining',    category: 'Food & Dining',    date: 'Oct 19, 2023', amount: -12.30,  icon: 'ph-hamburger',     status: 'completed' },
-  { id: 'tx-11', name: 'Spotify',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 18, 2023', amount: -9.99,   icon: 'ph-music-note',    status: 'completed' },
+  { id: 'tx-11', name: 'Spotify',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 18, 2023', amount: -9.99,   icon: 'ph-music-notes',   status: 'completed' },
   { id: 'tx-12', name: 'Google Cloud',         merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 17, 2023', amount: -78.50,  icon: 'ph-google-logo',   status: 'completed' },
   { id: 'tx-13', name: 'Client Payment',       merchant: 'Income',           category: 'Business',         date: 'Oct 15, 2023', amount: 3500.00,  icon: 'ph-handshake',     status: 'completed' },
-  { id: 'tx-14', name: 'Pharmacy',             merchant: 'Healthcare',       category: 'Healthcare',       date: 'Oct 13, 2023', amount: -45.00,  icon: 'ph-first-aid',     status: 'pending'   },
+  { id: 'tx-14', name: 'Pharmacy',             merchant: 'Healthcare',       category: 'Healthcare',       date: 'Oct 13, 2023', amount: -45.00,  icon: 'ph-first-aid-kit', status: 'pending'   },
   { id: 'tx-15', name: 'Amazon Purchase',      merchant: 'Shopping',         category: 'Electronics',      date: 'Oct 11, 2023', amount: -234.99, icon: 'ph-package',       status: 'completed' },
   { id: 'tx-16', name: 'Zoom Subscription',    merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 09, 2023', amount: -16.99,  icon: 'ph-video-camera',  status: 'completed' },
   { id: 'tx-17', name: 'Salary Deposit',       merchant: 'Income',           category: 'Business',         date: 'Oct 01, 2023', amount: 7500.00,  icon: 'ph-money',         status: 'completed' },
-  { id: 'tx-18', name: 'Electricity Bill',     merchant: 'Utilities',        category: 'Food & Dining',    date: 'Sep 30, 2023', amount: -120.00, icon: 'ph-lightning',     status: 'completed' },
+  { id: 'tx-18', name: 'Electricity Bill',     merchant: 'Utilities',        category: 'Utilities',        date: 'Sep 30, 2023', amount: -120.00, icon: 'ph-lightning',     status: 'completed' },
   { id: 'tx-19', name: 'Gym Membership',       merchant: 'Health',           category: 'Healthcare',       date: 'Sep 28, 2023', amount: -50.00,  icon: 'ph-barbell',       status: 'failed'    },
   { id: 'tx-20', name: 'Airbnb',               merchant: 'Travel',           category: 'Transport',        date: 'Sep 25, 2023', amount: -380.00, icon: 'ph-house',         status: 'completed' },
 ];
@@ -392,7 +393,7 @@ function renderTxSummary() {
   const metrics = [
     { title: 'Total Income', value: fmt(income), trend: 'up', trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-up', colorClass: 'green' },
     { title: 'Total Expenses', value: fmt(expenses), trend: 'down', trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-down', colorClass: 'purple' },
-    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: '', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
+    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: '-', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
   ];
   let html = '';
   metrics.forEach(metric => {
