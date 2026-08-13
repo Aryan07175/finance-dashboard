@@ -696,7 +696,7 @@ function renderSessions() {
   list.innerHTML = html;
 
   // Revoke button click
-  list.querySelectorAll('.session-revoke-btn').forEach((btn, i) => {
+  list.querySelectorAll('.session-revoke-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       btn.closest('.session-item').style.opacity = '0.4';
       btn.textContent = 'Revoked';
