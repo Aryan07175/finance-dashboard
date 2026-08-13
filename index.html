@@ -393,12 +393,161 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Preferences</h1>
-            <p class="page-subtitle">Manage your account settings.</p>
+            <p class="page-subtitle">Manage your profile and application settings.</p>
           </div>
         </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Settings panel coming soon.</p>
+
+        <div class="settings-layout">
+          <!-- Profile Settings -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Profile Information</h2>
+              <button class="btn-primary btn-sm" id="save-profile-btn">
+                <i class="ph ph-floppy-disk"></i> Save Changes
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="profile-avatar-row">
+                <div class="avatar avatar-lg">AJ</div>
+                <div>
+                  <p class="settings-label">Profile Photo</p>
+                  <p class="settings-desc">Update your profile picture. Accepted formats: JPG, PNG.</p>
+                  <button class="btn-secondary btn-sm" style="margin-top: 8px;">Upload Photo</button>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="pref-firstname">First Name</label>
+                  <input type="text" id="pref-firstname" class="form-input" value="Aryan">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-lastname">Last Name</label>
+                  <input type="text" id="pref-lastname" class="form-input" value="J.">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-email">Email Address</label>
+                  <input type="email" id="pref-email" class="form-input" value="aryan@example.com">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-phone">Phone Number</label>
+                  <input type="tel" id="pref-phone" class="form-input" value="+91 98765 43210">
+                </div>
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="pref-bio">Bio</label>
+                  <textarea id="pref-bio" class="form-input form-textarea" rows="3">Full-stack developer & freelancer. Managing finances with FinDash.</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Notifications</h2>
+            </div>
+            <div class="card-body">
+              <div class="toggle-list">
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Email Notifications</div>
+                    <div class="settings-desc">Receive transaction summaries and alerts via email.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">SMS Alerts</div>
+                    <div class="settings-desc">Get instant SMS for large transactions.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Push Notifications</div>
+                    <div class="settings-desc">Enable browser push notifications.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Weekly Summary</div>
+                    <div class="settings-desc">Receive a weekly financial report every Monday.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Marketing Emails</div>
+                    <div class="settings-desc">Receive tips, product updates, and offers.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Preferences -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Display Preferences</h2>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label" for="pref-currency">Currency</label>
+                  <select id="pref-currency" class="form-input filter-select">
+                    <option value="USD" selected>USD — US Dollar</option>
+                    <option value="EUR">EUR — Euro</option>
+                    <option value="GBP">GBP — British Pound</option>
+                    <option value="INR">INR — Indian Rupee</option>
+                    <option value="JPY">JPY — Japanese Yen</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-language">Language</label>
+                  <select id="pref-language" class="form-input filter-select">
+                    <option value="en" selected>English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="es">Spanish</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-timezone">Timezone</label>
+                  <select id="pref-timezone" class="form-input filter-select">
+                    <option value="IST" selected>IST — UTC+5:30</option>
+                    <option value="UTC">UTC — UTC+0:00</option>
+                    <option value="EST">EST — UTC-5:00</option>
+                    <option value="PST">PST — UTC-8:00</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="pref-dateformat">Date Format</label>
+                  <select id="pref-dateformat" class="form-input filter-select">
+                    <option value="MMM DD, YYYY" selected>MMM DD, YYYY</option>
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -408,12 +557,100 @@
         <div class="page-header">
           <div>
             <h1 class="page-title">Security</h1>
-            <p class="page-subtitle">Keep your account safe.</p>
+            <p class="page-subtitle">Manage your account security and active sessions.</p>
           </div>
         </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Security settings coming soon.</p>
+
+        <div class="settings-layout">
+          <!-- Change Password -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Change Password</h2>
+            </div>
+            <div class="card-body">
+              <div class="security-notice">
+                <i class="ph ph-info"></i>
+                <span>Use a strong password with at least 8 characters, including uppercase, numbers, and symbols.</span>
+              </div>
+              <div class="form-grid" style="margin-top: var(--spacing-5);">
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="sec-current-pw">Current Password</label>
+                  <input type="password" id="sec-current-pw" class="form-input" placeholder="Enter current password">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="sec-new-pw">New Password</label>
+                  <input type="password" id="sec-new-pw" class="form-input" placeholder="Enter new password">
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="sec-confirm-pw">Confirm New Password</label>
+                  <input type="password" id="sec-confirm-pw" class="form-input" placeholder="Confirm new password">
+                </div>
+              </div>
+              <div class="pw-strength-bar" id="pw-strength-bar" style="margin-top: var(--spacing-4);">
+                <div class="pw-strength-fill" id="pw-strength-fill"></div>
+              </div>
+              <p class="pw-strength-label" id="pw-strength-label" style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 4px;">Password strength: Not set</p>
+              <button class="btn-primary" style="margin-top: var(--spacing-5);">
+                <i class="ph ph-lock-key"></i>
+                Update Password
+              </button>
+            </div>
+          </div>
+
+          <!-- Two-Factor Auth -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Two-Factor Authentication</h2>
+              <span class="status-badge completed">Enabled</span>
+            </div>
+            <div class="card-body">
+              <div class="tfa-status-row">
+                <div class="tfa-icon-wrap">
+                  <i class="ph ph-shield-check"></i>
+                </div>
+                <div>
+                  <p class="settings-label">Authenticator App</p>
+                  <p class="settings-desc">Your account is protected with a time-based one-time password (TOTP) authenticator app.</p>
+                </div>
+              </div>
+              <div class="toggle-list" style="margin-top: var(--spacing-5);">
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Two-Factor Authentication</div>
+                    <div class="settings-desc">Require a second step when signing in.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <div>
+                    <div class="settings-label">Login Notifications</div>
+                    <div class="settings-desc">Get notified of new logins to your account.</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Sessions -->
+          <div class="card settings-card">
+            <div class="card-header">
+              <h2 class="card-title">Active Sessions</h2>
+              <button class="btn-secondary btn-sm" style="color: var(--color-accent-danger); border-color: rgba(239,68,68,0.3);">
+                <i class="ph ph-sign-out"></i> Revoke All
+              </button>
+            </div>
+            <div class="card-body p-0">
+              <div class="session-list" id="session-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
           </div>
         </div>
       </div>

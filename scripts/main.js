@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPortfolio();
   initTransactions();
   initCards();
+  initSecurity();
 });
 
 function initDashboard() {
@@ -683,4 +684,84 @@ function renderCardActivity() {
     </tr>`;
   });
   tbody.innerHTML = html;
+}
+
+/* =====================
+   SECURITY PAGE
+   ===================== */
+const mockSessions = [
+  { device: 'MacBook Pro', browser: 'Chrome 118 · Mumbai, IN', icon: 'ph-laptop', isCurrent: true, time: 'Active now' },
+  { device: 'iPhone 15 Pro', browser: 'Safari 17 · Mumbai, IN', icon: 'ph-device-mobile', isCurrent: false, time: '2 hours ago' },
+  { device: 'Windows PC', browser: 'Edge 119 · Delhi, IN', icon: 'ph-desktop', isCurrent: false, time: 'Yesterday, 4:30 PM' },
+  { device: 'iPad Air', browser: 'Safari 17 · Pune, IN', icon: 'ph-device-tablet', isCurrent: false, time: '3 days ago' },
+];
+
+function initSecurity() {
+  renderSessions();
+  initPasswordStrength();
+}
+
+function renderSessions() {
+  const list = document.getElementById('session-list');
+  if (!list) return;
+  let html = '';
+  mockSessions.forEach(session => {
+    html += `
+      <div class="session-item">
+        <div class="session-left">
+          <div class="session-device-icon"><i class="ph ${session.icon}"></i></div>
+          <div>
+            <div class="session-device-name">
+              ${session.device}
+              ${session.isCurrent ? '<span class="session-current-badge">Current</span>' : ''}
+            </div>
+            <div class="session-device-detail">${session.browser} · ${session.time}</div>
+          </div>
+        </div>
+        ${session.isCurrent
+          ? '<span style="font-size:var(--font-size-xs);color:var(--color-text-tertiary);">This device</span>'
+          : '<button class="session-revoke-btn">Revoke</button>'
+        }
+      </div>`;
+  });
+  list.innerHTML = html;
+
+  // Revoke button click
+  list.querySelectorAll('.session-revoke-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      btn.closest('.session-item').style.opacity = '0.4';
+      btn.textContent = 'Revoked';
+      btn.disabled = true;
+    });
+  });
+}
+
+function initPasswordStrength() {
+  const input = document.getElementById('sec-new-pw');
+  const bar = document.getElementById('pw-strength-fill');
+  const label = document.getElementById('pw-strength-label');
+  if (!input || !bar || !label) return;
+
+  input.addEventListener('input', () => {
+    const val = input.value;
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { pct: '0%', color: 'transparent', text: 'Password strength: Not set' },
+      { pct: '25%', color: '#EF4444', text: 'Password strength: Weak' },
+      { pct: '50%', color: '#F59E0B', text: 'Password strength: Fair' },
+      { pct: '75%', color: '#3B82F6', text: 'Password strength: Good' },
+      { pct: '100%', color: '#10B981', text: 'Password strength: Strong' },
+    ];
+
+    const lvl = val.length === 0 ? levels[0] : levels[Math.min(score, 4)];
+    bar.style.width = lvl.pct;
+    bar.style.backgroundColor = lvl.color;
+    label.textContent = lvl.text;
+    label.style.color = lvl.color === 'transparent' ? 'var(--color-text-secondary)' : lvl.color;
+  });
 }
