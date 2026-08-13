@@ -32,19 +32,19 @@
       <nav class="sidebar-nav">
         <div class="nav-group">
           <span class="nav-label">Menu</span>
-          <a href="#" class="nav-item active">
+          <a href="#" class="nav-item active" data-view="dashboard">
             <i class="ph ph-squares-four"></i>
             Dashboard
           </a>
-          <a href="#" class="nav-item">
+          <a href="#" class="nav-item" data-view="portfolio">
             <i class="ph ph-chart-line-up"></i>
             Portfolio
           </a>
-          <a href="#" class="nav-item">
+          <a href="#" class="nav-item" data-view="transactions">
             <i class="ph ph-arrows-left-right"></i>
             Transactions
           </a>
-          <a href="#" class="nav-item">
+          <a href="#" class="nav-item" data-view="cards">
             <i class="ph ph-credit-card"></i>
             Cards
           </a>
@@ -52,11 +52,11 @@
         
         <div class="nav-group">
           <span class="nav-label">Settings</span>
-          <a href="#" class="nav-item">
+          <a href="#" class="nav-item" data-view="preferences">
             <i class="ph ph-gear"></i>
             Preferences
           </a>
-          <a href="#" class="nav-item">
+          <a href="#" class="nav-item" data-view="security">
             <i class="ph ph-shield-check"></i>
             Security
           </a>
@@ -95,7 +95,7 @@
       </header>
 
       <!-- Dashboard View -->
-      <div class="dashboard-view">
+      <div id="view-dashboard" class="dashboard-view view-section active">
         <div class="page-header">
           <div>
             <h1 class="page-title">Dashboard</h1>
@@ -162,6 +162,170 @@
               </div>
             </div>
           </section>
+        </div>
+      </div>
+
+      <!-- Portfolio View -->
+      <div id="view-portfolio" class="dashboard-view view-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Portfolio</h1>
+            <p class="page-subtitle">Your asset allocation and investment performance.</p>
+          </div>
+          <div>
+            <button class="btn-secondary">
+              <i class="ph ph-download-simple"></i>
+              Export Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Portfolio Summary Metrics -->
+        <section class="metric-cards-grid" id="portfolio-metrics-container">
+          <!-- Populated by JS -->
+        </section>
+
+        <div class="portfolio-grid">
+          <!-- Asset Allocation -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Asset Allocation</h2>
+              <span class="card-subtitle-tag">Live</span>
+            </div>
+            <div class="card-body">
+              <div class="donut-chart-wrapper">
+                <div class="donut-chart" id="donut-chart">
+                  <div class="donut-center">
+                    <span class="donut-total-label">Total</span>
+                    <span class="donut-total-value">$124,563</span>
+                  </div>
+                </div>
+              </div>
+              <div class="asset-legend" id="asset-legend">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Holdings -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Top Holdings</h2>
+              <button class="btn-icon"><i class="ph ph-dots-three-outline"></i></button>
+            </div>
+            <div class="card-body p-0">
+              <div class="transaction-table-container">
+                <table class="transaction-table">
+                  <thead>
+                    <tr>
+                      <th>Asset</th>
+                      <th>Price</th>
+                      <th>Change</th>
+                      <th class="text-right">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody id="holdings-table-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card" style="margin-top: var(--spacing-6);">
+          <div class="card-header">
+            <h2 class="card-title">Portfolio Performance</h2>
+            <div style="display:flex; gap: var(--spacing-2);">
+              <button class="perf-tab active" data-range="1W">1W</button>
+              <button class="perf-tab" data-range="1M">1M</button>
+              <button class="perf-tab" data-range="3M">3M</button>
+              <button class="perf-tab" data-range="1Y">1Y</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="line-chart-container" id="line-chart-container">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions View -->
+      <div id="view-transactions" class="dashboard-view view-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Transactions</h1>
+            <p class="page-subtitle">View and filter your financial activity.</p>
+          </div>
+        </div>
+        <section class="transactions-section card">
+          <div class="card-header">
+            <h2 class="card-title">All Transactions</h2>
+          </div>
+          <div class="card-body p-0">
+            <div class="transaction-table-container">
+              <table class="transaction-table">
+                <thead>
+                  <tr>
+                    <th>Transaction</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th class="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="all-transactions-container">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Cards View -->
+      <div id="view-cards" class="dashboard-view view-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Cards</h1>
+            <p class="page-subtitle">Manage your physical and virtual cards.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Card management coming soon.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences View -->
+      <div id="view-preferences" class="dashboard-view view-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Preferences</h1>
+            <p class="page-subtitle">Manage your account settings.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Settings panel coming soon.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security View -->
+      <div id="view-security" class="dashboard-view view-section">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Security</h1>
+            <p class="page-subtitle">Keep your account safe.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Security settings coming soon.</p>
+          </div>
         </div>
       </div>
     </main>

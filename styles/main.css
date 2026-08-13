@@ -44,6 +44,15 @@
   padding: var(--spacing-8);
 }
 
+/* Views */
+.view-section {
+  display: none;
+}
+
+.view-section.active {
+  display: block;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -81,6 +90,168 @@
 .text-right { text-align: right; }
 .text-center { text-align: center; }
 .p-0 { padding: 0 !important; }
+
+/* Portfolio Grid */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: var(--spacing-6);
+}
+
+/* Donut Chart */
+.donut-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.donut-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.donut-total-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.donut-total-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* Asset Legend */
+.asset-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legend-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.legend-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.legend-pct {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.legend-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.legend-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* Card subtle tag */
+.card-subtitle-tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent-success);
+  background-color: rgba(16, 185, 129, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Holdings table change badges */
+.change-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.change-badge.up {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-accent-success);
+}
+
+.change-badge.down {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-accent-danger);
+}
+
+/* Line Chart */
+.line-chart-container {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.line-chart-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Performance tabs */
+.perf-tab {
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.perf-tab:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.perf-tab.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
