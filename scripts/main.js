@@ -12,30 +12,50 @@ function initDashboard() {
   renderTransactions('transactions-container');
 }
 
-function initNavigation() {
+function navigateTo(viewId) {
   const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
   const views = document.querySelectorAll('.view-section');
 
-  navItems.forEach(item => {
+  navItems.forEach(nav => {
+    if (nav.getAttribute('data-view') === viewId) {
+      nav.classList.add('active');
+    } else {
+      nav.classList.remove('active');
+    }
+  });
+
+  views.forEach(view => {
+    if (view.id === `view-${viewId}`) {
+      view.classList.add('active');
+      // C5 FIX: Lazy-render line chart when portfolio becomes visible so width is correctly calculated
+      if (viewId === 'portfolio') {
+        setTimeout(() => renderLineChart('1W'), 0);
+      }
+    } else {
+      view.classList.remove('active');
+    }
+  });
+}
+
+function initNavigation() {
+  // Sidebar navigation
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
-      
       const viewId = item.getAttribute('data-view');
-      if (!viewId) return;
-
-      // Update active nav state
-      navItems.forEach(nav => nav.classList.remove('active'));
-      item.classList.add('active');
-
-      // Update active view
-      views.forEach(view => {
-        if (view.id === `view-${viewId}`) {
-          view.classList.add('active');
-        } else {
-          view.classList.remove('active');
-        }
-      });
+      if (viewId) navigateTo(viewId);
     });
+  });
+
+  // C7 FIX: Global data-view link handler
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-view]');
+    // Skip if it's already handled by sidebar nav
+    if (!link || link.closest('.sidebar-nav')) return;
+    
+    e.preventDefault();
+    const viewId = link.getAttribute('data-view');
+    if (viewId) navigateTo(viewId);
   });
 }
 
@@ -173,7 +193,7 @@ function initPortfolio() {
   renderPortfolioMetrics();
   renderDonutChart();
   renderHoldingsTable();
-  renderLineChart('1W');
+  // Line chart is now lazy-rendered via navigation activation (C5 fix)
   initPerfTabs();
 }
 
