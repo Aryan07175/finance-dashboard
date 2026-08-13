@@ -326,10 +326,64 @@
             <h1 class="page-title">Cards</h1>
             <p class="page-subtitle">Manage your physical and virtual cards.</p>
           </div>
+          <button class="btn-primary" id="add-card-btn">
+            <i class="ph ph-plus"></i>
+            Add New Card
+          </button>
         </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="text-center" style="color: var(--color-text-secondary); padding: 40px 0;">Card management coming soon.</p>
+
+        <!-- Card Visuals -->
+        <div class="cards-grid" id="cards-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Card Details + Actions -->
+        <div class="cards-lower-grid">
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Quick Actions</h2>
+            </div>
+            <div class="card-body">
+              <div class="card-actions-list" id="card-actions-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Spend Limits -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Spending Limits</h2>
+              <button class="btn-icon"><i class="ph ph-pencil"></i></button>
+            </div>
+            <div class="card-body">
+              <div class="spend-limits-list" id="spend-limits-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Card Activity -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Recent Card Activity</h2>
+              <a href="#" class="link-primary" data-view="transactions">View All</a>
+            </div>
+            <div class="card-body p-0">
+              <div class="transaction-table-container">
+                <table class="transaction-table">
+                  <thead>
+                    <tr>
+                      <th>Transaction</th>
+                      <th>Date</th>
+                      <th class="text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="card-activity-body"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>

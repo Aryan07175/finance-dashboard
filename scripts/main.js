@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initPortfolio();
   initTransactions();
+  initCards();
 });
 
 function initDashboard() {
@@ -523,4 +524,163 @@ function initTxFilters() {
     if (c) c.value = 'all';
     applyTxFilters();
   });
+}
+
+/* =====================
+   CARDS PAGE
+   ===================== */
+const mockCards = [
+  {
+    id: 'card-1',
+    bank: 'FinDash Platinum',
+    number: '•••• •••• •••• 4921',
+    holder: 'Aryan J.',
+    expiry: '08 / 27',
+    type: 'Visa',
+    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #2563EB 60%, #3b82f6 100%)',
+    network: 'ph-credit-card',
+    isVirtual: false,
+  },
+  {
+    id: 'card-2',
+    bank: 'FinDash Business',
+    number: '•••• •••• •••• 7743',
+    holder: 'Aryan J.',
+    expiry: '03 / 26',
+    type: 'Mastercard',
+    gradient: 'linear-gradient(135deg, #111827 0%, #374151 60%, #4B5563 100%)',
+    network: 'ph-credit-card',
+    isVirtual: false,
+  },
+  {
+    id: 'card-3',
+    bank: 'FinDash Virtual',
+    number: '•••• •••• •••• 1102',
+    holder: 'Aryan J.',
+    expiry: '12 / 25',
+    type: 'Virtual',
+    gradient: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 60%, #8B5CF6 100%)',
+    network: 'ph-lightning',
+    isVirtual: true,
+  },
+];
+
+const cardQuickActions = [
+  { icon: 'ph-snowflake', color: 'blue', label: 'Freeze Card', desc: 'Temporarily lock card' },
+  { icon: 'ph-eye', color: 'green', label: 'Reveal PIN', desc: 'View your card PIN' },
+  { icon: 'ph-arrows-clockwise', color: 'amber', label: 'Request Replacement', desc: 'Get a new card issued' },
+  { icon: 'ph-trash', color: 'red', label: 'Cancel Card', desc: 'Permanently close this card', danger: true },
+];
+
+const spendingLimits = [
+  { name: 'Online Shopping', used: 1450, limit: 2000, color: '#2563EB' },
+  { name: 'Food & Dining', used: 340, limit: 500, color: '#10B981' },
+  { name: 'Travel', used: 890, limit: 1500, color: '#8B5CF6' },
+  { name: 'Entertainment', used: 75, limit: 200, color: '#F59E0B' },
+];
+
+const cardActivity = allTransactions.slice(0, 5);
+
+function initCards() {
+  renderCardsGrid();
+  renderCardQuickActions();
+  renderSpendingLimits();
+  renderCardActivity();
+}
+
+function renderCardsGrid() {
+  const grid = document.getElementById('cards-grid');
+  if (!grid) return;
+  let html = '';
+  mockCards.forEach((card, i) => {
+    html += `
+      <div class="credit-card ${i === 0 ? 'selected' : ''}" style="background: ${card.gradient};" id="${card.id}">
+        ${card.isVirtual ? '<span class="card-type-badge">Virtual</span>' : ''}
+        <div class="card-top-row">
+          <span class="card-bank-name">${card.bank}</span>
+          <div class="card-chip"></div>
+        </div>
+        <div class="card-number">${card.number}</div>
+        <div class="card-bottom-row">
+          <div class="card-holder-info">
+            <div class="card-label">Card Holder</div>
+            <div class="card-value">${card.holder}</div>
+          </div>
+          <div class="card-holder-info" style="text-align:center;">
+            <div class="card-label">Expires</div>
+            <div class="card-value">${card.expiry}</div>
+          </div>
+          <div>
+            <i class="ph ${card.network} card-network-logo"></i>
+          </div>
+        </div>
+      </div>`;
+  });
+  grid.innerHTML = html;
+
+  // Clicking a card selects it
+  grid.querySelectorAll('.credit-card').forEach(el => {
+    el.addEventListener('click', () => {
+      grid.querySelectorAll('.credit-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  });
+}
+
+function renderCardQuickActions() {
+  const list = document.getElementById('card-actions-list');
+  if (!list) return;
+  let html = '';
+  cardQuickActions.forEach(action => {
+    html += `
+      <button class="card-action-btn ${action.danger ? 'danger' : ''}">
+        <div class="card-action-icon ${action.color}"><i class="ph ${action.icon}"></i></div>
+        <div class="card-action-text">
+          <span class="card-action-label">${action.label}</span>
+          <span class="card-action-desc">${action.desc}</span>
+        </div>
+      </button>`;
+  });
+  list.innerHTML = html;
+}
+
+function renderSpendingLimits() {
+  const list = document.getElementById('spend-limits-list');
+  if (!list) return;
+  let html = '';
+  spendingLimits.forEach(limit => {
+    const pct = Math.min((limit.used / limit.limit) * 100, 100);
+    const fmtUsed = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(limit.used);
+    const fmtLimit = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(limit.limit);
+    html += `
+      <div class="spend-limit-item">
+        <div class="spend-limit-header">
+          <span class="spend-limit-name">${limit.name}</span>
+          <span class="spend-limit-amount">${fmtUsed} / ${fmtLimit}</span>
+        </div>
+        <div class="spend-limit-bar">
+          <div class="spend-limit-fill" style="width: ${pct}%; background: ${limit.color};"></div>
+        </div>
+      </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function renderCardActivity() {
+  const tbody = document.getElementById('card-activity-body');
+  if (!tbody) return;
+  let html = '';
+  cardActivity.forEach(tx => {
+    const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', signDisplay: 'always' }).format(tx.amount);
+    const amtClass = tx.amount > 0 ? 'amount-positive' : 'amount-negative';
+    html += `<tr>
+      <td><div class="tx-item">
+        <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
+        <div class="tx-details"><span class="tx-name">${tx.name}</span><span class="tx-merchant">${tx.merchant}</span></div>
+      </div></td>
+      <td><span class="tx-date">${tx.date}</span></td>
+      <td class="text-right"><span class="tx-amount ${amtClass}">${fmt}</span></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
 }
