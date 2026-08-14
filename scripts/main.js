@@ -298,7 +298,7 @@ function renderHoldingsTable() {
             </div>
           </div>
         </td>
-        <td><span class="tx-date">${h.price}</span></td>
+        <td><span>${h.price}</span></td>
         <td><span class="change-badge ${h.changeDir}">${h.change}</span></td>
         <td class="text-right"><span class="tx-amount amount-positive">${h.value}</span></td>
       </tr>`;
