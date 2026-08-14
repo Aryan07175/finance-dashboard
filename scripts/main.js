@@ -683,6 +683,20 @@ const mockSessions = [
 function initSecurity() {
   renderSessions();
   initPasswordStrength();
+
+  const revokeAllBtn = document.getElementById('revoke-all-btn');
+  if (revokeAllBtn) {
+    revokeAllBtn.addEventListener('click', () => {
+      const list = document.getElementById('session-list');
+      if (list) {
+        list.querySelectorAll('.session-revoke-btn').forEach(btn => {
+          if (!btn.disabled) {
+            btn.click();
+          }
+        });
+      }
+    });
+  }
 }
 
 function renderSessions() {
