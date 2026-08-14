@@ -245,7 +245,22 @@ function renderDonutChart() {
     const hole = document.createElement('div');
     hole.className = 'donut-hole';
     hole.style.cssText = 'position:absolute;width:110px;height:110px;border-radius:50%;background:var(--color-surface);display:flex;flex-direction:column;align-items:center;justify-content:center;';
+    
+    const label = document.createElement('span');
+    label.className = 'donut-total-label';
+    label.textContent = 'Total Value';
+    
+    const value = document.createElement('span');
+    value.className = 'donut-total-value';
+    value.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(total);
+    
+    hole.appendChild(label);
+    hole.appendChild(value);
+    
     chart.appendChild(hole);
+  } else {
+    const valueEl = existingHole.querySelector('.donut-total-value');
+    if (valueEl) valueEl.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(total);
   }
 
   // Legend
