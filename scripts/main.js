@@ -10,6 +10,43 @@ document.addEventListener('DOMContentLoaded', () => {
 function initDashboard() {
   renderMetricCards();
   renderTransactions('transactions-container');
+  renderCashFlowChart();
+}
+
+function renderCashFlowChart() {
+  const container = document.getElementById('cash-flow-chart-container');
+  if (!container) return;
+
+  const dataIn = [60, 80, 50, 90, 70, 40, 85];
+  const dataOut = [40, 30, 70, 20, 50, 30, 60];
+  
+  const W = container.clientWidth || 500;
+  const H = 200;
+  const pad = { top: 20, right: 20, bottom: 20, left: 20 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const barW = Math.max(10, Math.min(30, (chartW / dataIn.length) * 0.4));
+  const spacing = chartW / dataIn.length;
+  
+  let rectsHTML = '';
+  for (let i = 0; i < dataIn.length; i++) {
+    const x = pad.left + i * spacing + spacing / 2;
+    const hIn = (dataIn[i] / 100) * chartH;
+    const hOut = (dataOut[i] / 100) * chartH;
+    const yIn = pad.top + chartH - hIn;
+    const yOut = pad.top + chartH - hOut;
+    
+    rectsHTML += `
+      <rect x="${x - barW - 2}" y="${yIn}" width="${barW}" height="${hIn}" fill="var(--color-primary)" rx="2"/>
+      <rect x="${x + 2}" y="${yOut}" width="${barW}" height="${hOut}" fill="var(--color-accent-warning)" rx="2"/>
+    `;
+  }
+  
+  container.innerHTML = `
+    <svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      ${rectsHTML}
+    </svg>
+  `;
 }
 
 function navigateTo(viewId) {
