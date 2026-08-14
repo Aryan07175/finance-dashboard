@@ -333,22 +333,22 @@ function renderLineChart(range) {
     const v = minVal + ((maxVal - minVal) * i / yTicks);
     const y = pad.top + yScale(v);
     const label = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(v * 1000);
-    yAxisHTML += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#94A3B8">${label}</text>
-    <line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="#E2E8F0" stroke-width="1"/>`;
+    yAxisHTML += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--color-text-secondary)">${label}</text>
+    <line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="var(--color-border)" stroke-width="1"/>`;
   }
 
   container.innerHTML = `
     <svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#2563EB" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+          <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0"/>
         </linearGradient>
       </defs>
       ${yAxisHTML}
       <path d="${areaD}" fill="url(#areaGrad)"/>
-      <path d="${pathD}" fill="none" stroke="#2563EB" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="${pad.left + (data.length - 1) * xStep}" cy="${pad.top + yScale(data[data.length - 1])}" r="4" fill="#2563EB"/>
+      <path d="${pathD}" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${pad.left + (data.length - 1) * xStep}" cy="${pad.top + yScale(data[data.length - 1])}" r="4" fill="var(--color-primary)"/>
     </svg>`;
 }
 
