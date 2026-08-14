@@ -38,20 +38,10 @@ function navigateTo(viewId) {
 }
 
 function initNavigation() {
-  // Sidebar navigation
-  document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      const viewId = item.getAttribute('data-view');
-      if (viewId) navigateTo(viewId);
-    });
-  });
-
-  // C7 FIX: Global data-view link handler
+  // Global data-view link handler
   document.addEventListener('click', (e) => {
     const link = e.target.closest('[data-view]');
-    // Skip if it's already handled by sidebar nav
-    if (!link || link.closest('.sidebar-nav')) return;
+    if (!link) return;
     
     e.preventDefault();
     const viewId = link.getAttribute('data-view');
