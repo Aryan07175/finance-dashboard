@@ -120,6 +120,20 @@ app.get('/api/cards', async (req, res) => {
   }
 });
 
+// 5. Sessions
+app.get('/api/sessions', async (req, res) => {
+  try {
+    const sessions = await queryAll('SELECT * FROM sessions');
+    const formattedSessions = sessions.map(s => ({
+      ...s,
+      isCurrent: s.isCurrent === 1
+    }));
+    res.json(formattedSessions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });

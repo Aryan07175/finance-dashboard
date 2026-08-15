@@ -41,6 +41,16 @@ const db = new sqlite3.Database(dbPath, (err) => {
         color TEXT
       )`);
 
+      // Create Sessions table
+      db.run(`CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        device TEXT,
+        browser TEXT,
+        icon TEXT,
+        isCurrent BOOLEAN,
+        time TEXT
+      )`);
+
       // Seed data if empty
       db.get("SELECT COUNT(*) AS count FROM transactions", (err, row) => {
         if (row && row.count === 0) {
@@ -60,6 +70,13 @@ const db = new sqlite3.Database(dbPath, (err) => {
         if (row && row.count === 0) {
           console.log("Seeding portfolio assets...");
           seedPortfolio();
+        }
+      });
+
+      db.get("SELECT COUNT(*) AS count FROM sessions", (err, row) => {
+        if (row && row.count === 0) {
+          console.log("Seeding sessions...");
+          seedSessions();
         }
       });
     });
@@ -153,6 +170,21 @@ function seedPortfolio() {
   const stmt = db.prepare("INSERT INTO portfolio_assets VALUES (?, ?, ?, ?)");
   portfolioAssets.forEach(p => {
     stmt.run(p.name, p.value, p.pct, p.color);
+  });
+  stmt.finalize();
+}
+
+function seedSessions() {
+  const mockSessions = [
+    { device: 'MacBook Pro', browser: 'Chrome 118 · Mumbai, IN', icon: 'ph-laptop', isCurrent: true, time: 'Active now' },
+    { device: 'iPhone 15 Pro', browser: 'Safari 17 · Mumbai, IN', icon: 'ph-device-mobile', isCurrent: false, time: '2 hours ago' },
+    { device: 'Windows PC', browser: 'Edge 119 · Delhi, IN', icon: 'ph-desktop', isCurrent: false, time: 'Yesterday, 4:30 PM' },
+    { device: 'iPad Air', browser: 'Safari 17 · Pune, IN', icon: 'ph-device-tablet', isCurrent: false, time: '3 days ago' },
+  ];
+
+  const stmt = db.prepare("INSERT INTO sessions (device, browser, icon, isCurrent, time) VALUES (?, ?, ?, ?, ?)");
+  mockSessions.forEach(s => {
+    stmt.run(s.device, s.browser, s.icon, s.isCurrent ? 1 : 0, s.time);
   });
   stmt.finalize();
 }
