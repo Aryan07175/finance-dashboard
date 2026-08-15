@@ -1,10 +1,43 @@
-document.addEventListener('DOMContentLoaded', () => {
-  initDashboard();
-  initNavigation();
-  initPortfolio();
-  initTransactions();
-  initCards();
-  initSecurity();
+let mockMetrics = [];
+let allTransactions = [];
+let portfolioAssets = [];
+let portfolioHoldings = [];
+let portfolioMetrics = [];
+let perfData = {};
+let mockCards = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const metricsData = await api.getDashboardMetrics();
+    mockMetrics = metricsData.metrics;
+    
+    allTransactions = await api.getTransactions();
+    cardActivity = allTransactions.slice(0, 5);
+    txFiltered = [...allTransactions];
+    
+    const portfolioData = await api.getPortfolio();
+    portfolioAssets = portfolioData.assets;
+    perfData = portfolioData.perfData;
+    portfolioHoldings = portfolioData.holdings;
+    
+    // Derived metrics for portfolio from dashboard metrics
+    portfolioMetrics = [
+      metricsData.metrics[0], // Total Balance
+      { title: "Day's Gain", value: '+$1,423.50', trend: 'up', trendValue: '1.16%', trendText: 'today', iconClass: 'ph-trend-up', colorClass: 'green' },
+      { title: 'Total Return', value: '+$18,240.00', trend: 'up', trendValue: '17.2%', trendText: 'all time', iconClass: 'ph-chart-line-up', colorClass: 'purple' },
+    ];
+    
+    mockCards = await api.getCards();
+    
+    initDashboard();
+    initNavigation();
+    initPortfolio();
+    initTransactions();
+    initCards();
+    initSecurity();
+  } catch (error) {
+    console.error('Error loading data from backend:', error);
+  }
 });
 
 function initDashboard() {
@@ -86,35 +119,7 @@ function initNavigation() {
   });
 }
 
-const mockMetrics = [
-  {
-    title: 'Total Balance',
-    value: '$124,563.00',
-    trend: 'up',
-    trendValue: '2.5%',
-    trendText: 'vs last month',
-    iconClass: 'ph-wallet',
-    colorClass: 'blue'
-  },
-  {
-    title: 'Total Income',
-    value: '$14,230.50',
-    trend: 'up',
-    trendValue: '12.4%',
-    trendText: 'vs last month',
-    iconClass: 'ph-trend-up',
-    colorClass: 'green'
-  },
-  {
-    title: 'Total Expenses',
-    value: '$5,120.25',
-    trend: 'down',
-    trendValue: '4.1%',
-    trendText: 'vs last month',
-    iconClass: 'ph-trend-down',
-    colorClass: 'purple'
-  }
-];
+// mockMetrics initialized from API
 
 // C3 FIX: mockTransactions removed — dashboard now uses allTransactions (unified dataset)
 
@@ -187,34 +192,7 @@ function renderTransactions(containerId = 'transactions-container') {
 /* =====================
    PORTFOLIO PAGE
    ===================== */
-const portfolioAssets = [
-  { name: 'Stocks', value: 62000, pct: 49.8, color: '#2563EB' },
-  { name: 'Crypto', value: 24500, pct: 19.7, color: '#8B5CF6' },
-  { name: 'Cash', value: 20000, pct: 16.1, color: '#10B981' },
-  { name: 'Real Estate', value: 12000, pct: 9.6, color: '#F59E0B' },
-  { name: 'Bonds', value: 6063, pct: 4.8, color: '#94A3B8' },
-];
-
-const portfolioHoldings = [
-  { ticker: 'AAPL', name: 'Apple Inc.', price: '$189.50', change: '+1.24%', changeDir: 'up', value: '$18,950.00', icon: 'ph-apple-logo' },
-  { ticker: 'MSFT', name: 'Microsoft Corp.', price: '$415.20', change: '+0.87%', changeDir: 'up', value: '$16,608.00', icon: 'ph-windows-logo' },
-  { ticker: 'NVDA', name: 'NVIDIA Corp.', price: '$875.00', change: '+3.12%', changeDir: 'up', value: '$14,000.00', icon: 'ph-cpu' },
-  { ticker: 'BTC', name: 'Bitcoin', price: '$43,200.00', change: '-2.10%', changeDir: 'down', value: '$12,500.00', icon: 'ph-currency-btc' },
-  { ticker: 'GOOGL', name: 'Alphabet Inc.', price: '$174.80', change: '+0.52%', changeDir: 'up', value: '$8,740.00', icon: 'ph-google-logo' },
-];
-
-const portfolioMetrics = [
-  { title: 'Total Value', value: '$124,563.00', trend: 'up', trendValue: '2.5%', trendText: 'vs last month', iconClass: 'ph-wallet', colorClass: 'blue' },
-  { title: "Day's Gain", value: '+$1,423.50', trend: 'up', trendValue: '1.16%', trendText: 'today', iconClass: 'ph-trend-up', colorClass: 'green' },
-  { title: 'Total Return', value: '+$18,240.00', trend: 'up', trendValue: '17.2%', trendText: 'all time', iconClass: 'ph-chart-line-up', colorClass: 'purple' },
-];
-
-const perfData = {
-  '1W': [116, 118, 117, 121, 120, 122, 124.5],
-  '1M': [108, 110, 107, 113, 115, 118, 119, 121, 120, 122, 121, 124, 123, 124.5],
-  '3M': [100, 103, 99, 105, 108, 106, 110, 112, 111, 115, 113, 117, 116, 119, 118, 120, 121, 122, 121, 123, 124.5],
-  '1Y': [88, 90, 86, 94, 96, 91, 99, 102, 98, 104, 106, 103, 108, 111, 108, 113, 115, 112, 117, 116, 119, 118, 120, 121, 122, 121, 123, 124.5],
-};
+// portfolio data initialized from API
 
 function initPortfolio() {
   renderPortfolioMetrics();
@@ -393,32 +371,11 @@ function initPerfTabs() {
 /* =====================
    TRANSACTIONS PAGE
    ===================== */
-const allTransactions = [
-  { id: 'tx-1',  name: 'Apple Store',         merchant: 'Technology',       category: 'Electronics',      date: 'Nov 01, 2023', amount: -1299.00, icon: 'ph-apple-logo',    status: 'completed' },
-  { id: 'tx-2',  name: 'Stripe Payout',        merchant: 'Income',           category: 'Business',         date: 'Oct 31, 2023', amount: 4500.00,  icon: 'ph-bank',          status: 'completed' },
-  { id: 'tx-3',  name: 'AWS Cloud Services',   merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 29, 2023', amount: -145.20,  icon: 'ph-cloud',         status: 'completed' },
-  { id: 'tx-4',  name: 'Starbucks',            merchant: 'Food & Dining',    category: 'Coffee',           date: 'Oct 28, 2023', amount: -6.50,   icon: 'ph-coffee',        status: 'completed' },
-  { id: 'tx-5',  name: 'Upwork Escrow',        merchant: 'Income',           category: 'Freelance',        date: 'Oct 27, 2023', amount: 850.00,   icon: 'ph-briefcase',     status: 'completed' },
-  { id: 'tx-6',  name: 'Netflix',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 25, 2023', amount: -15.99,  icon: 'ph-television',    status: 'completed' },
-  { id: 'tx-7',  name: 'Uber',                 merchant: 'Transport',        category: 'Transport',        date: 'Oct 24, 2023', amount: -23.40,  icon: 'ph-car',           status: 'completed' },
-  { id: 'tx-8',  name: 'GitHub Copilot',       merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 22, 2023', amount: -19.00,  icon: 'ph-github-logo',   status: 'completed' },
-  { id: 'tx-9',  name: 'Freelance Invoice #8', merchant: 'Income',           category: 'Freelance',        date: 'Oct 20, 2023', amount: 2200.00,  icon: 'ph-receipt',       status: 'completed' },
-  { id: 'tx-10', name: 'McDonald\'s',          merchant: 'Food & Dining',    category: 'Food & Dining',    date: 'Oct 19, 2023', amount: -12.30,  icon: 'ph-hamburger',     status: 'completed' },
-  { id: 'tx-11', name: 'Spotify',              merchant: 'Entertainment',    category: 'Entertainment',    date: 'Oct 18, 2023', amount: -9.99,   icon: 'ph-music-notes',   status: 'completed' },
-  { id: 'tx-12', name: 'Google Cloud',         merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 17, 2023', amount: -78.50,  icon: 'ph-google-logo',   status: 'completed' },
-  { id: 'tx-13', name: 'Client Payment',       merchant: 'Income',           category: 'Business',         date: 'Oct 15, 2023', amount: 3500.00,  icon: 'ph-handshake',     status: 'completed' },
-  { id: 'tx-14', name: 'Pharmacy',             merchant: 'Healthcare',       category: 'Healthcare',       date: 'Oct 13, 2023', amount: -45.00,  icon: 'ph-first-aid-kit', status: 'pending'   },
-  { id: 'tx-15', name: 'Amazon Purchase',      merchant: 'Shopping',         category: 'Electronics',      date: 'Oct 11, 2023', amount: -234.99, icon: 'ph-package',       status: 'completed' },
-  { id: 'tx-16', name: 'Zoom Subscription',    merchant: 'Software',         category: 'Infrastructure',   date: 'Oct 09, 2023', amount: -16.99,  icon: 'ph-video-camera',  status: 'completed' },
-  { id: 'tx-17', name: 'Salary Deposit',       merchant: 'Income',           category: 'Business',         date: 'Oct 01, 2023', amount: 7500.00,  icon: 'ph-money',         status: 'completed' },
-  { id: 'tx-18', name: 'Electricity Bill',     merchant: 'Utilities',        category: 'Utilities',        date: 'Sep 30, 2023', amount: -120.00, icon: 'ph-lightning',     status: 'completed' },
-  { id: 'tx-19', name: 'Gym Membership',       merchant: 'Health',           category: 'Healthcare',       date: 'Sep 28, 2023', amount: -50.00,  icon: 'ph-barbell',       status: 'failed'    },
-  { id: 'tx-20', name: 'Airbnb',               merchant: 'Travel',           category: 'Transport',        date: 'Sep 25, 2023', amount: -380.00, icon: 'ph-house',         status: 'completed' },
-];
+// allTransactions initialized from API
 
 const TX_PAGE_SIZE = 8;
 let txCurrentPage = 1;
-let txFiltered = [...allTransactions];
+let txFiltered = [];
 
 function initTransactions() {
   renderTxSummary();
@@ -541,41 +498,7 @@ function initTxFilters() {
 /* =====================
    CARDS PAGE
    ===================== */
-const mockCards = [
-  {
-    id: 'card-1',
-    bank: 'FinDash Platinum',
-    number: '•••• •••• •••• 4921',
-    holder: 'Aryan J.',
-    expiry: '08 / 27',
-    type: 'Visa',
-    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #2563EB 60%, #3b82f6 100%)',
-    network: 'ph-credit-card',
-    isVirtual: false,
-  },
-  {
-    id: 'card-2',
-    bank: 'FinDash Business',
-    number: '•••• •••• •••• 7743',
-    holder: 'Aryan J.',
-    expiry: '03 / 26',
-    type: 'Mastercard',
-    gradient: 'linear-gradient(135deg, #111827 0%, #374151 60%, #4B5563 100%)',
-    network: 'ph-credit-card',
-    isVirtual: false,
-  },
-  {
-    id: 'card-3',
-    bank: 'FinDash Virtual',
-    number: '•••• •••• •••• 1102',
-    holder: 'Aryan J.',
-    expiry: '12 / 25',
-    type: 'Virtual',
-    gradient: 'linear-gradient(135deg, #5b21b6 0%, #7c3aed 60%, #8B5CF6 100%)',
-    network: 'ph-lightning',
-    isVirtual: true,
-  },
-];
+// mockCards initialized from API
 
 const cardQuickActions = [
   { icon: 'ph-snowflake', color: 'blue', label: 'Freeze Card', desc: 'Temporarily lock card' },
@@ -591,7 +514,7 @@ const spendingLimits = [
   { name: 'Entertainment', used: 75, limit: 200, color: '#F59E0B' },
 ];
 
-const cardActivity = allTransactions.slice(0, 5);
+let cardActivity = [];
 
 function initCards() {
   renderCardsGrid();
