@@ -5,8 +5,13 @@ let portfolioHoldings = [];
 let portfolioMetrics = [];
 let perfData = {};
 let mockCards = [];
+let mockSessions = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const loader = document.getElementById('global-loader');
+  const errorState = document.getElementById('global-error');
+  const appContainer = document.getElementById('app');
+
   try {
     const metricsData = await api.getDashboardMetrics();
     mockMetrics = metricsData.metrics;
@@ -28,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ];
     
     mockCards = await api.getCards();
+    mockSessions = await api.getSessions();
     
     initDashboard();
     initNavigation();
@@ -35,8 +41,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTransactions();
     initCards();
     initSecurity();
+
+    // Hide loader and show app
+    if (loader) loader.style.display = 'none';
+    if (appContainer) appContainer.style.display = 'flex';
   } catch (error) {
     console.error('Error loading data from backend:', error);
+    if (loader) loader.style.display = 'none';
+    if (errorState) {
+      errorState.style.display = 'flex';
+      const errorMsg = document.getElementById('error-message');
+      if (errorMsg) errorMsg.textContent = error.message;
+    }
   }
 });
 
@@ -623,12 +639,6 @@ function renderCardActivity() {
 /* =====================
    SECURITY PAGE
    ===================== */
-const mockSessions = [
-  { device: 'MacBook Pro', browser: 'Chrome 118 · Mumbai, IN', icon: 'ph-laptop', isCurrent: true, time: 'Active now' },
-  { device: 'iPhone 15 Pro', browser: 'Safari 17 · Mumbai, IN', icon: 'ph-device-mobile', isCurrent: false, time: '2 hours ago' },
-  { device: 'Windows PC', browser: 'Edge 119 · Delhi, IN', icon: 'ph-desktop', isCurrent: false, time: 'Yesterday, 4:30 PM' },
-  { device: 'iPad Air', browser: 'Safari 17 · Pune, IN', icon: 'ph-device-tablet', isCurrent: false, time: '3 days ago' },
-];
 
 function initSecurity() {
   renderSessions();
