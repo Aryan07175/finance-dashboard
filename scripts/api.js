@@ -1,27 +1,30 @@
 const API_BASE = 'http://localhost:3000/api';
 
-const api = {
-  getDashboardMetrics: async () => {
-    const res = await fetch(`${API_BASE}/dashboard/metrics`);
-    if (!res.ok) throw new Error('Failed to fetch dashboard metrics');
-    return res.json();
-  },
-  
-  getTransactions: async () => {
-    const res = await fetch(`${API_BASE}/transactions`);
-    if (!res.ok) throw new Error('Failed to fetch transactions');
-    return res.json();
-  },
-  
-  getPortfolio: async () => {
-    const res = await fetch(`${API_BASE}/portfolio`);
-    if (!res.ok) throw new Error('Failed to fetch portfolio data');
-    return res.json();
-  },
-  
-  getCards: async () => {
-    const res = await fetch(`${API_BASE}/cards`);
-    if (!res.ok) throw new Error('Failed to fetch cards');
-    return res.json();
+async function fetchWithHandling(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      // Try to parse the backend error JSON
+      let errorMsg = `HTTP error! status: ${res.status}`;
+      try {
+        const errorData = await res.json();
+        if (errorData.error) errorMsg = errorData.error;
+      } catch (e) {
+        // Not a JSON response
+      }
+      throw new Error(errorMsg);
+    }
+    return await res.json();
+  } catch (error) {
+    console.error(`API Error on ${url}:`, error);
+    throw error;
   }
+}
+
+const api = {
+  getDashboardMetrics: () => fetchWithHandling(`${API_BASE}/dashboard/metrics`),
+  getTransactions: () => fetchWithHandling(`${API_BASE}/transactions`),
+  getPortfolio: () => fetchWithHandling(`${API_BASE}/portfolio`),
+  getCards: () => fetchWithHandling(`${API_BASE}/cards`),
+  getSessions: () => fetchWithHandling(`${API_BASE}/sessions`),
 };
