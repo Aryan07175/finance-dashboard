@@ -20,7 +20,23 @@
   <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
-  <div id="app" class="layout-app">
+  <!-- Loading State -->
+  <div id="global-loader" class="global-loader">
+    <div class="spinner"></div>
+    <p>Loading Dashboard...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="global-error" class="global-error" style="display: none;">
+    <div class="error-content">
+      <i class="ph ph-warning-circle"></i>
+      <h2>Failed to load data</h2>
+      <p id="error-message">Could not connect to the backend server.</p>
+      <button onclick="location.reload()" class="btn-primary">Retry</button>
+    </div>
+  </div>
+
+  <div id="app" class="layout-app" style="display: none;">
     <!-- Sidebar Component -->
     <aside class="sidebar">
       <div class="sidebar-brand">
