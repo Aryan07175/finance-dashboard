@@ -424,7 +424,10 @@
 }
 
 .amount-positive { color: var(--color-accent-success); }
-.amount-negative { color: var(--color-text-primary); }
+/* BUG-19 FIX: Negative amounts now render in danger/red color */
+.amount-negative {
+  color: var(--color-accent-danger);
+}
 
 /* --- Dummy Chart CSS representation --- */
 .chart-placeholder {
