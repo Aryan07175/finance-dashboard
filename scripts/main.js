@@ -501,9 +501,21 @@ function applyTxFilters() {
 }
 
 function initTxFilters() {
+  // BUG-06/07 FIX: populate categories dynamically from actual transaction data
+  const catSelect = document.getElementById('tx-category-filter');
+  if (catSelect) {
+    const categories = [...new Set(allTransactions.map(t => t.category))].sort();
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      catSelect.appendChild(opt);
+    });
+  }
+
   document.getElementById('tx-search-input')?.addEventListener('input', applyTxFilters);
   document.getElementById('tx-type-filter')?.addEventListener('change', applyTxFilters);
-  document.getElementById('tx-category-filter')?.addEventListener('change', applyTxFilters);
+  catSelect?.addEventListener('change', applyTxFilters);
   document.getElementById('tx-clear-filters')?.addEventListener('click', () => {
     const s = document.getElementById('tx-search-input');
     const t = document.getElementById('tx-type-filter');
