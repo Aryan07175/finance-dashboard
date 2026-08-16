@@ -540,6 +540,14 @@ function initCards() {
   renderCardQuickActions();
   renderSpendingLimits();
   renderCardActivity();
+
+  // BUG-04 FIX: wire up the "Add New Card" button
+  const addCardBtn = document.getElementById('add-card-btn');
+  if (addCardBtn) {
+    addCardBtn.addEventListener('click', () => {
+      alert('Add New Card: This feature is coming soon. Contact support to add a new card to your account.');
+    });
+  }
 }
 
 function renderCardsGrid() {
