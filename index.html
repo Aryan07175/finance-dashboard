@@ -119,12 +119,19 @@
             <h1 class="page-title">Dashboard</h1>
             <p class="page-subtitle">Welcome back, here's your financial overview.</p>
           </div>
-          <div class="date-picker">
-            <button class="btn-secondary">
+          <div class="date-picker" id="date-picker-wrap" style="position:relative;">
+            <button class="btn-secondary" id="date-range-btn">
               <i class="ph ph-calendar-blank"></i>
-              Last 30 Days
+              <span id="date-range-label">Last 30 Days</span>
               <i class="ph ph-caret-down"></i>
             </button>
+            <!-- BUG-16 FIX: date range dropdown -->
+            <div class="date-range-dropdown" id="date-range-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;box-shadow:var(--shadow-md);z-index:100;min-width:160px;overflow:hidden;">
+              <button class="date-range-option" data-range="Last 7 Days">Last 7 Days</button>
+              <button class="date-range-option" data-range="Last 30 Days">Last 30 Days</button>
+              <button class="date-range-option" data-range="Last 3 Months">Last 3 Months</button>
+              <button class="date-range-option" data-range="This Year">This Year</button>
+            </div>
           </div>
         </div>
 

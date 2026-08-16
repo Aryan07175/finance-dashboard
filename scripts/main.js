@@ -65,6 +65,26 @@ function initDashboard() {
   renderTransactions('transactions-container');
   // BUG-03 FIX: defer chart render so clientWidth is measured after #app becomes visible
   setTimeout(() => renderCashFlowChart(), 0);
+
+  // BUG-16 FIX: wire up date range picker dropdown
+  const dateBtn = document.getElementById('date-range-btn');
+  const dateDropdown = document.getElementById('date-range-dropdown');
+  const dateLabel = document.getElementById('date-range-label');
+  if (dateBtn && dateDropdown) {
+    dateBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dateDropdown.style.display = dateDropdown.style.display === 'none' ? 'block' : 'none';
+    });
+    dateDropdown.querySelectorAll('.date-range-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const range = opt.getAttribute('data-range');
+        if (dateLabel) dateLabel.textContent = range;
+        dateDropdown.style.display = 'none';
+        showToast(`Date range set to: ${range}`);
+      });
+    });
+    document.addEventListener('click', () => { dateDropdown.style.display = 'none'; });
+  }
 }
 
 function renderCashFlowChart() {

@@ -463,3 +463,24 @@
 .bar.out {
   background-color: var(--color-border);
 }
+
+/* BUG-16 FIX: Date range dropdown option buttons */
+.date-range-option {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.date-range-option:hover {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+}
+
