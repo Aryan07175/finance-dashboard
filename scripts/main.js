@@ -138,6 +138,31 @@ function initNavigation() {
     const viewId = link.getAttribute('data-view');
     if (viewId) navigateTo(viewId);
   });
+
+  // BUG-14 FIX: wire up global header search — navigate to transactions and apply search
+  const globalSearch = document.querySelector('.search-input');
+  if (globalSearch) {
+    globalSearch.addEventListener('input', () => {
+      const term = globalSearch.value.trim();
+      if (term.length === 0) return;
+      // Navigate to transactions view
+      navigateTo('transactions');
+      // Sync with the transaction search input and re-apply filters
+      const txSearch = document.getElementById('tx-search-input');
+      if (txSearch) {
+        txSearch.value = term;
+        applyTxFilters();
+      }
+    });
+    // Clear tx search when global search is cleared
+    globalSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        globalSearch.value = '';
+        const txSearch = document.getElementById('tx-search-input');
+        if (txSearch) { txSearch.value = ''; applyTxFilters(); }
+      }
+    });
+  }
 }
 
 // mockMetrics initialized from API
