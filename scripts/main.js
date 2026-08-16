@@ -827,14 +827,16 @@ function initSecurity() {
   const revokeAllBtn = document.getElementById('revoke-all-btn');
   if (revokeAllBtn) {
     revokeAllBtn.addEventListener('click', () => {
+      // BUG-15 FIX: call revokeSession() directly instead of simulating .click()
       const list = document.getElementById('session-list');
       if (list) {
-        list.querySelectorAll('.session-revoke-btn').forEach(btn => {
-          if (!btn.disabled) {
-            btn.click();
+        list.querySelectorAll('.session-item:not([data-revoked])').forEach(item => {
+          if (!item.querySelector('.session-current-badge')) {
+            revokeSession(item);
           }
         });
       }
+      showToast('✓ All other sessions have been revoked.');
     });
   }
 }
@@ -864,14 +866,21 @@ function renderSessions() {
   });
   list.innerHTML = html;
 
-  // Revoke button click
-  list.querySelectorAll('.session-revoke-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.closest('.session-item').style.opacity = '0.4';
-      btn.textContent = 'Revoked';
-      btn.disabled = true;
-    });
+  // BUG-15 FIX: use event delegation + shared revokeSession() instead of per-button listeners
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('.session-revoke-btn');
+    if (!btn || btn.disabled) return;
+    revokeSession(btn.closest('.session-item'));
   });
+}
+
+// Shared revoke handler — called by both individual buttons and Revoke All
+function revokeSession(sessionItem) {
+  if (!sessionItem || sessionItem.dataset.revoked) return;
+  sessionItem.dataset.revoked = 'true';
+  sessionItem.style.opacity = '0.4';
+  const btn = sessionItem.querySelector('.session-revoke-btn');
+  if (btn) { btn.textContent = 'Revoked'; btn.disabled = true; }
 }
 
 function initPasswordStrength() {
