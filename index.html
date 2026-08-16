@@ -100,9 +100,10 @@
           <input type="text" placeholder="Search transactions, cards, or help..." class="search-input">
         </div>
         <div class="header-actions">
-          <button class="action-btn" aria-label="Notifications">
+          <button class="action-btn" aria-label="Notifications" id="notif-btn">
             <i class="ph ph-bell"></i>
-            <span class="badge"></span>
+            <!-- BUG-13 FIX: badge hidden by default, shown by JS only when there are notifications -->
+            <span class="badge" id="notif-badge" style="display:none;"></span>
           </button>
           <button class="btn-primary">
             <i class="ph ph-plus"></i>
