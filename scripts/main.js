@@ -404,6 +404,19 @@ function initTransactions() {
   renderTxSummary();
   renderFullTxTable();
   initTxFilters();
+
+  // BUG-12 FIX: single delegated listener on the static pagination container
+  // instead of re-adding listeners on every renderFullTxTable() call
+  const paginationEl = document.getElementById('tx-pagination');
+  if (paginationEl) {
+    paginationEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.page-btn');
+      if (!btn || btn.disabled) return;
+      if (btn.id === 'prev-page') { txCurrentPage--; renderFullTxTable(); }
+      else if (btn.id === 'next-page') { txCurrentPage++; renderFullTxTable(); }
+      else if (btn.dataset.page) { txCurrentPage = parseInt(btn.dataset.page); renderFullTxTable(); }
+    });
+  }
 }
 
 function renderTxSummary() {
@@ -479,12 +492,7 @@ function renderFullTxTable() {
         ${Array.from({ length: totalPages }, (_, i) => `<button class="page-btn ${i + 1 === txCurrentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`).join('')}
         <button class="page-btn" id="next-page" ${txCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''}><i class="ph ph-caret-right"></i></button>
       </div>`;
-
-    document.getElementById('prev-page')?.addEventListener('click', () => { txCurrentPage--; renderFullTxTable(); });
-    document.getElementById('next-page')?.addEventListener('click', () => { txCurrentPage++; renderFullTxTable(); });
-    pagination.querySelectorAll('[data-page]').forEach(btn => {
-      btn.addEventListener('click', () => { txCurrentPage = parseInt(btn.getAttribute('data-page')); renderFullTxTable(); });
-    });
+    // BUG-12 FIX: listeners are attached via delegation in initTransactions(), not here
   }
 }
 
