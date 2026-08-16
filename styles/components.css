@@ -430,8 +430,9 @@
 }
 
 /* --- Dummy Chart CSS representation --- */
+/* BUG-21 FIX: height matches the 200px SVG height rendered in JS */
 .chart-placeholder {
-  height: 250px;
+  height: 200px;
   width: 100%;
   display: flex;
   align-items: flex-end;
