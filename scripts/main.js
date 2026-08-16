@@ -416,7 +416,8 @@ function renderTxSummary() {
   const metrics = [
     { title: 'Total Income', value: fmt(income), trend: 'up', trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-up', colorClass: 'green' },
     { title: 'Total Expenses', value: fmt(expenses), trend: 'down', trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-down', colorClass: 'purple' },
-    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: '-', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
+    // BUG-10 FIX: show savings rate (net / income) as a meaningful trend value
+    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: income > 0 ? `${((net / income) * 100).toFixed(1)}% savings rate` : '–', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
   ];
   let html = '';
   metrics.forEach(metric => {
