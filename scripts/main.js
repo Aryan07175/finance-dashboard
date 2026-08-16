@@ -6,6 +6,8 @@ let portfolioMetrics = [];
 let perfData = {};
 let mockCards = [];
 let mockSessions = [];
+let cardActivity = [];
+let txFiltered = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('global-loader');
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     allTransactions = await api.getTransactions();
     cardActivity = allTransactions.slice(0, 5);
-    txFiltered = [...allTransactions];
+    txFiltered = [...allTransactions]; // initialise filtered set from full transaction list
     
     const portfolioData = await api.getPortfolio();
     portfolioAssets = portfolioData.assets;
@@ -391,7 +393,7 @@ function initPerfTabs() {
 
 const TX_PAGE_SIZE = 8;
 let txCurrentPage = 1;
-let txFiltered = [];
+// txFiltered is declared at the top of the file (module-level)
 
 function initTransactions() {
   renderTxSummary();
@@ -530,7 +532,7 @@ const spendingLimits = [
   { name: 'Entertainment', used: 75, limit: 200, color: '#F59E0B' },
 ];
 
-let cardActivity = [];
+// cardActivity is declared at the top of the file (module-level)
 
 function initCards() {
   renderCardsGrid();
