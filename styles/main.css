@@ -108,10 +108,13 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* BUG-18 FIX: view-section.active is a flex column container that fills space;
+   overflow-y:auto lives on .dashboard-view so each page scrolls independently */
 .view-section.active {
   display: flex;
   flex: 1;
   flex-direction: column;
+  overflow: hidden; /* prevent the container itself from overflowing */
   animation: fadeIn 0.3s ease-out forwards;
 }
 
