@@ -61,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initDashboard() {
   renderMetricCards();
   renderTransactions('transactions-container');
-  renderCashFlowChart();
+  // BUG-03 FIX: defer chart render so clientWidth is measured after #app becomes visible
+  setTimeout(() => renderCashFlowChart(), 0);
 }
 
 function renderCashFlowChart() {
