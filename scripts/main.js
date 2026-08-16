@@ -175,12 +175,12 @@ function renderMetricCards() {
   container.innerHTML = html;
 }
 
-function renderTransactions(containerId = 'transactions-container') {
+function renderTransactions(containerId = 'transactions-container', limit = 5) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // C3 FIX: use unified allTransactions, show first 5 on dashboard
-  const txList = allTransactions.slice(0, 5);
+  // BUG-11 FIX: added explicit `limit` param; the function now uses it instead of always slicing 5
+  const txList = allTransactions.slice(0, limit);
   let html = '';
 
   txList.forEach(tx => {
