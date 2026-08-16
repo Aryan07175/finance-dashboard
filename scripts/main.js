@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTransactions();
     initCards();
     initSecurity();
+    initPreferences(); // BUG-05 FIX: wire up previously no-op buttons
 
     // Hide loader and show app
     if (loader) loader.style.display = 'none';
@@ -645,6 +646,105 @@ function renderCardActivity() {
     </tr>`;
   });
   tbody.innerHTML = html;
+}
+
+/* =====================
+   PREFERENCES PAGE
+   ===================== */
+
+// BUG-05 FIX: wire up all previously no-op buttons with user feedback
+function showToast(message, type = 'success') {
+  // Remove any existing toast
+  const existing = document.getElementById('app-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'app-toast';
+  const bgColor = type === 'success' ? 'var(--color-accent-success)' : type === 'error' ? 'var(--color-accent-danger)' : 'var(--color-primary)';
+  toast.style.cssText = `
+    position: fixed; bottom: 24px; right: 24px; z-index: 99999;
+    background: ${bgColor}; color: white;
+    padding: 12px 20px; border-radius: 8px;
+    font-size: 14px; font-family: inherit; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    display: flex; align-items: center; gap: 8px;
+    animation: fadeIn 0.2s ease-out;
+    max-width: 340px;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+function initPreferences() {
+  // Save Profile button
+  const saveProfileBtn = document.getElementById('save-profile-btn');
+  if (saveProfileBtn) {
+    saveProfileBtn.addEventListener('click', () => {
+      const first = document.getElementById('pref-firstname')?.value || '';
+      const last = document.getElementById('pref-lastname')?.value || '';
+      // Update sidebar user name to reflect saved values
+      const sidebarName = document.querySelector('.user-name');
+      if (sidebarName && (first || last)) sidebarName.textContent = `${first} ${last}`.trim();
+      showToast('✓ Profile changes saved successfully!');
+    });
+  }
+
+  // Upload Photo button
+  const uploadPhotoBtn = document.querySelector('.profile-avatar-row .btn-secondary');
+  if (uploadPhotoBtn) {
+    uploadPhotoBtn.addEventListener('click', () => {
+      showToast('Photo upload is coming soon. Stay tuned!', 'info');
+    });
+  }
+
+  // Export CSV button (Transactions page)
+  const exportCsvBtn = document.querySelector('#view-transactions .btn-secondary');
+  if (exportCsvBtn) {
+    exportCsvBtn.addEventListener('click', () => {
+      if (!allTransactions.length) { showToast('No transactions to export.', 'error'); return; }
+      const headers = ['ID', 'Name', 'Merchant', 'Category', 'Date', 'Amount', 'Status'];
+      const rows = allTransactions.map(t =>
+        [t.id, `"${t.name}"`, `"${t.merchant}"`, `"${t.category}"`, t.date, t.amount, t.status].join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'transactions.csv'; a.click();
+      URL.revokeObjectURL(url);
+      showToast('✓ Transactions exported as CSV!');
+    });
+  }
+
+  // Export Report button (Portfolio page)
+  const exportReportBtn = document.querySelector('#view-portfolio .btn-secondary');
+  if (exportReportBtn) {
+    exportReportBtn.addEventListener('click', () => {
+      showToast('Portfolio report export is coming soon!', 'info');
+    });
+  }
+
+  // Update Password button
+  const updatePwBtn = document.querySelector('#view-security .btn-primary');
+  if (updatePwBtn) {
+    updatePwBtn.addEventListener('click', () => {
+      const current = document.getElementById('sec-current-pw')?.value || '';
+      const newPw = document.getElementById('sec-new-pw')?.value || '';
+      const confirm = document.getElementById('sec-confirm-pw')?.value || '';
+      if (!current) { showToast('Please enter your current password.', 'error'); return; }
+      if (!newPw || newPw.length < 8) { showToast('New password must be at least 8 characters.', 'error'); return; }
+      if (newPw !== confirm) { showToast('Passwords do not match.', 'error'); return; }
+      // Clear fields after simulated save
+      ['sec-current-pw', 'sec-new-pw', 'sec-confirm-pw'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      const bar = document.getElementById('pw-strength-fill');
+      const label = document.getElementById('pw-strength-label');
+      if (bar) { bar.style.width = '0%'; bar.style.backgroundColor = 'transparent'; }
+      if (label) label.textContent = 'Password strength: Not set';
+      showToast('✓ Password updated successfully!');
+    });
+  }
 }
 
 /* =====================
