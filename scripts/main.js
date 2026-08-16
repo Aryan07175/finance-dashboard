@@ -357,7 +357,10 @@ function renderLineChart(range) {
   for (let i = 0; i <= yTicks; i++) {
     const v = minVal + ((maxVal - minVal) * i / yTicks);
     const y = pad.top + yScale(v);
-    const label = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(v * 1000);
+    // BUG-09 FIX: perfData values are stored as index values in thousands
+    // (e.g. 124.5 = $124,500). The * 1000 is now explicitly documented here.
+    const portfolioValueUSD = v * 1000;
+    const label = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(portfolioValueUSD);
     yAxisHTML += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--color-text-secondary)">${label}</text>
     <line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="var(--color-border)" stroke-width="1"/>`;
   }
