@@ -26,16 +26,18 @@ const queryAll = (sql, params = []) => {
 app.get('/api/dashboard/metrics', async (req, res) => {
   try {
     const transactions = await queryAll('SELECT amount FROM transactions');
+    // BUG-08 FIX: sum all amounts directly (income positive, expenses negative)
     const income = transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
     const expenses = transactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
-    const balance = income - expenses; // Simplified total balance
+    // Net balance = sum of all amounts (income already positive, expenses already negative)
+    const balance = transactions.reduce((s, t) => s + t.amount, 0);
 
     res.json({
       metrics: [
         {
-          title: 'Total Balance',
+          title: 'Net Balance',
           value: `$${balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
-          trend: 'up',
+          trend: balance >= 0 ? 'up' : 'down',
           trendValue: '2.5%',
           trendText: 'vs last month',
           iconClass: 'ph-wallet',
