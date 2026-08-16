@@ -766,16 +766,36 @@ function showToast(message, type = 'success') {
 }
 
 function initPreferences() {
+  // BUG-17 FIX: restore previously saved display preferences from localStorage
+  const prefFields = ['pref-currency', 'pref-language', 'pref-timezone', 'pref-dateformat'];
+  prefFields.forEach(id => {
+    const el = document.getElementById(id);
+    const saved = localStorage.getItem(id);
+    if (el && saved) el.value = saved;
+  });
+  const savedFirstname = localStorage.getItem('pref-firstname');
+  const savedLastname = localStorage.getItem('pref-lastname');
+  if (savedFirstname) { const el = document.getElementById('pref-firstname'); if (el) el.value = savedFirstname; }
+  if (savedLastname) { const el = document.getElementById('pref-lastname'); if (el) el.value = savedLastname; }
+
   // Save Profile button
   const saveProfileBtn = document.getElementById('save-profile-btn');
   if (saveProfileBtn) {
     saveProfileBtn.addEventListener('click', () => {
       const first = document.getElementById('pref-firstname')?.value || '';
       const last = document.getElementById('pref-lastname')?.value || '';
+      // Persist name fields
+      localStorage.setItem('pref-firstname', first);
+      localStorage.setItem('pref-lastname', last);
       // Update sidebar user name to reflect saved values
       const sidebarName = document.querySelector('.user-name');
       if (sidebarName && (first || last)) sidebarName.textContent = `${first} ${last}`.trim();
-      showToast('✓ Profile changes saved successfully!');
+      // BUG-17 FIX: also persist display preference dropdowns
+      prefFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) localStorage.setItem(id, el.value);
+      });
+      showToast('✓ Profile & preferences saved successfully!');
     });
   }
 
