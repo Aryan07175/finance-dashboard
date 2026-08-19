@@ -488,3 +488,9 @@
   color: var(--color-primary);
 }
 
+/* L1 FIX: active/selected date range option */
+.date-range-option.active {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
