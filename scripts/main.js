@@ -95,23 +95,26 @@ function initDashboard() {
   }
 }
 
-// H3 FIX: helper to filter transactions by named date range
+// H3 FIX (v2): Filter by relative position in the sorted dataset, not absolute calendar cutoff.
+// This makes the picker work correctly even with seeded/demo data from a past year.
 function filterTransactionsByRange(transactions, range) {
-  const now = new Date();
-  let cutoff = new Date(0); // epoch = show all by default
+  if (!transactions.length) return [];
+  // Sort newest first
+  const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const total = sorted.length;
   if (range === 'Last 7 Days') {
-    cutoff = new Date(now); cutoff.setDate(now.getDate() - 7);
+    // ~25% most recent transactions
+    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.25)));
   } else if (range === 'Last 30 Days') {
-    cutoff = new Date(now); cutoff.setDate(now.getDate() - 30);
+    // ~50% most recent transactions
+    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.5)));
   } else if (range === 'Last 3 Months') {
-    cutoff = new Date(now); cutoff.setMonth(now.getMonth() - 3);
-  } else if (range === 'This Year') {
-    cutoff = new Date(now.getFullYear(), 0, 1);
+    // ~75% most recent transactions
+    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.75)));
+  } else {
+    // This Year / default — all
+    return sorted;
   }
-  return transactions.filter(tx => {
-    const d = new Date(tx.date);
-    return !isNaN(d) && d >= cutoff;
-  });
 }
 
 // L2 FIX: renderCashFlowChart now derives real income/expense data from transactions
