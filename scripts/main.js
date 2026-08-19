@@ -961,11 +961,35 @@ function initPreferences() {
     });
   }
 
-  // Upload Photo button
+  // M4 FIX: Upload Photo opens a real file picker and previews in sidebar avatar
   const uploadPhotoBtn = document.querySelector('.profile-avatar-row .btn-secondary');
   if (uploadPhotoBtn) {
-    uploadPhotoBtn.addEventListener('click', () => {
-      showToast('Photo upload is coming soon. Stay tuned!', 'info');
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/png, image/jpeg, image/webp';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+
+    uploadPhotoBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Update both the large profile avatar and the sidebar avatar
+        const profileAvatar = document.querySelector('.profile-avatar-row .avatar');
+        const sidebarAvatar = document.querySelector('.sidebar-footer .avatar');
+        [profileAvatar, sidebarAvatar].forEach(av => {
+          if (!av) return;
+          av.style.backgroundImage = `url(${e.target.result})`;
+          av.style.backgroundSize = 'cover';
+          av.style.backgroundPosition = 'center';
+          av.textContent = ''; // clear initials
+        });
+        showToast('✓ Profile photo updated!', 'success');
+      };
+      reader.readAsDataURL(file);
     });
   }
 
