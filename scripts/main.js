@@ -79,6 +79,9 @@ function initDashboard() {
       opt.addEventListener('click', () => {
         const range = opt.getAttribute('data-range');
         if (dateLabel) dateLabel.textContent = range;
+        // L1 FIX: mark selected option as active
+        dateDropdown.querySelectorAll('.date-range-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
         dateDropdown.style.display = 'none';
         showToast(`Date range set to: ${range}`);
       });
@@ -138,6 +141,7 @@ function navigateTo(viewId) {
   views.forEach(view => {
     if (view.id === `view-${viewId}`) {
       view.classList.add('active');
+      view.scrollTop = 0; // M1 FIX: reset scroll on every navigation
       // C5 FIX: Lazy-render line chart when portfolio becomes visible so width is correctly calculated
       if (viewId === 'portfolio') {
         setTimeout(() => renderLineChart('1W'), 0);
@@ -705,7 +709,7 @@ function initCards() {
   const addCardBtn = document.getElementById('add-card-btn');
   if (addCardBtn) {
     addCardBtn.addEventListener('click', () => {
-      alert('Add New Card: This feature is coming soon. Contact support to add a new card to your account.');
+      showToast('Add New Card feature is coming soon. Contact support to add a card.', 'info');
     });
   }
 }
@@ -764,6 +768,23 @@ function renderCardQuickActions() {
       </button>`;
   });
   list.innerHTML = html;
+
+  // H4 FIX: wire up quick action buttons with feedback
+  list.querySelectorAll('.card-action-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const action = cardQuickActions[i];
+      if (!action) return;
+      if (action.label === 'Freeze Card') {
+        showToast('Card has been temporarily frozen.', 'info');
+      } else if (action.label === 'Reveal PIN') {
+        showToast('PIN: 4 9 2 1 — Do not share this with anyone.', 'info');
+      } else if (action.label === 'Request Replacement') {
+        showToast('Replacement card request submitted. Arrives in 3–5 business days.', 'success');
+      } else if (action.label === 'Cancel Card') {
+        showToast('Card cancellation requires email confirmation. A link has been sent.', 'error');
+      }
+    });
+  });
 }
 
 function renderSpendingLimits() {
@@ -860,12 +881,26 @@ function initPreferences() {
       // Update sidebar user name to reflect saved values
       const sidebarName = document.querySelector('.user-name');
       if (sidebarName && (first || last)) sidebarName.textContent = `${first} ${last}`.trim();
+      // M7 FIX: also update the sidebar avatar initials
+      const avatar = document.querySelector('.sidebar-footer .avatar');
+      if (avatar) {
+        const initials = `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+        if (initials) avatar.textContent = initials;
+      }
       // BUG-17 FIX: also persist display preference dropdowns
       prefFields.forEach(id => {
         const el = document.getElementById(id);
         if (el) localStorage.setItem(id, el.value);
       });
       showToast('✓ Profile & preferences saved successfully!');
+    });
+  }
+
+  // M3 FIX: wire up Send Money button
+  const sendMoneyBtn = document.querySelector('.header-actions .btn-primary');
+  if (sendMoneyBtn) {
+    sendMoneyBtn.addEventListener('click', () => {
+      showToast('Send Money feature coming soon! Use your bank app to transfer funds.', 'info');
     });
   }
 
@@ -940,11 +975,14 @@ function initSecurity() {
       // BUG-15 FIX: call revokeSession() directly instead of simulating .click()
       const list = document.getElementById('session-list');
       if (list) {
-        list.querySelectorAll('.session-item:not([data-revoked])').forEach(item => {
-          if (!item.querySelector('.session-current-badge')) {
-            revokeSession(item);
-          }
-        });
+        const revocable = list.querySelectorAll('.session-item:not([data-revoked])');
+        const toRevoke = [...revocable].filter(item => !item.querySelector('.session-current-badge'));
+        // M6 FIX: guard against revoking when nothing is left
+        if (toRevoke.length === 0) {
+          showToast('No active sessions to revoke.', 'info');
+          return;
+        }
+        toRevoke.forEach(item => revokeSession(item));
       }
       showToast('✓ All other sessions have been revoked.');
     });
