@@ -89,6 +89,9 @@
   justify-content: space-between;
   padding: 0 var(--spacing-8);
   flex-shrink: 0;
+  overflow: visible; /* allow absolutely-positioned dropdowns (e.g. notification panel) to show */
+  z-index: 100; /* ensure header sits above page content */
+  position: relative;
 }
 
 /* Dashboard View */
