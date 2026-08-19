@@ -99,12 +99,27 @@
           <i class="ph ph-magnifying-glass search-icon"></i>
           <input type="text" placeholder="Search transactions, cards, or help..." class="search-input">
         </div>
-        <div class="header-actions">
+        <div class="header-actions" style="position: relative;">
           <button class="action-btn" aria-label="Notifications" id="notif-btn">
             <i class="ph ph-bell"></i>
             <!-- BUG-13 FIX: badge hidden by default, shown by JS only when there are notifications -->
             <span class="badge" id="notif-badge" style="display:none;"></span>
           </button>
+          
+          <!-- Notification Dropdown Panel -->
+          <div class="notification-panel" id="notif-panel" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; width: 340px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 1000; flex-direction: column;">
+            <div class="notif-header" style="padding: var(--spacing-4); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="margin: 0; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-text-primary);">Notifications</h3>
+              <button id="notif-mark-read" style="background: none; border: none; color: var(--color-primary); font-size: var(--font-size-sm); cursor: pointer; padding: 0;">Mark all as read</button>
+            </div>
+            <div class="notif-body" id="notif-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column;">
+              <!-- Notifications will be injected here via JS -->
+            </div>
+            <div class="notif-footer" style="padding: var(--spacing-3); border-top: 1px solid var(--color-border); text-align: center;">
+              <a href="#" style="color: var(--color-primary); font-size: var(--font-size-sm); text-decoration: none; font-weight: var(--font-weight-medium);">View all notifications</a>
+            </div>
+          </div>
+
           <button class="btn-primary">
             <i class="ph ph-plus"></i>
             Send Money
