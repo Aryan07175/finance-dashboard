@@ -64,9 +64,9 @@ function initDashboard() {
   renderMetricCards();
   renderTransactions('transactions-container');
   // BUG-03 FIX: defer chart render so clientWidth is measured after #app becomes visible
-  setTimeout(() => renderCashFlowChart(), 0);
+  setTimeout(() => renderCashFlowChart(allTransactions), 0);
 
-  // BUG-16 FIX: wire up date range picker dropdown
+  // BUG-16 / H3 FIX: wire up date range picker — now actually filters dashboard data
   const dateBtn = document.getElementById('date-range-btn');
   const dateDropdown = document.getElementById('date-range-dropdown');
   const dateLabel = document.getElementById('date-range-label');
@@ -83,6 +83,11 @@ function initDashboard() {
         dateDropdown.querySelectorAll('.date-range-option').forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
         dateDropdown.style.display = 'none';
+
+        // H3 FIX: actually filter the transactions by date range and re-render
+        const filtered = filterTransactionsByRange(allTransactions, range);
+        renderTransactions('transactions-container', 5, filtered);
+        renderCashFlowChart(filtered);
         showToast(`Date range set to: ${range}`);
       });
     });
@@ -90,35 +95,70 @@ function initDashboard() {
   }
 }
 
-function renderCashFlowChart() {
+// H3 FIX: helper to filter transactions by named date range
+function filterTransactionsByRange(transactions, range) {
+  const now = new Date();
+  let cutoff = new Date(0); // epoch = show all by default
+  if (range === 'Last 7 Days') {
+    cutoff = new Date(now); cutoff.setDate(now.getDate() - 7);
+  } else if (range === 'Last 30 Days') {
+    cutoff = new Date(now); cutoff.setDate(now.getDate() - 30);
+  } else if (range === 'Last 3 Months') {
+    cutoff = new Date(now); cutoff.setMonth(now.getMonth() - 3);
+  } else if (range === 'This Year') {
+    cutoff = new Date(now.getFullYear(), 0, 1);
+  }
+  return transactions.filter(tx => {
+    const d = new Date(tx.date);
+    return !isNaN(d) && d >= cutoff;
+  });
+}
+
+// L2 FIX: renderCashFlowChart now derives real income/expense data from transactions
+function renderCashFlowChart(transactions = []) {
   const container = document.getElementById('cash-flow-chart-container');
   if (!container) return;
 
-  const dataIn = [60, 80, 50, 90, 70, 40, 85];
-  const dataOut = [40, 30, 70, 20, 50, 30, 60];
-  
+  // Group by month: last 7 distinct months found in data
+  const monthMap = {};
+  transactions.forEach(tx => {
+    const d = new Date(tx.date);
+    if (isNaN(d)) return;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthMap[key]) monthMap[key] = { in: 0, out: 0 };
+    if (tx.amount > 0) monthMap[key].in += tx.amount;
+    else monthMap[key].out += Math.abs(tx.amount);
+  });
+
+  const months = Object.keys(monthMap).sort().slice(-7);
+  // Fallback to static data if no real data available
+  const dataIn  = months.length > 0 ? months.map(m => monthMap[m].in)  : [60, 80, 50, 90, 70, 40, 85];
+  const dataOut = months.length > 0 ? months.map(m => monthMap[m].out) : [40, 30, 70, 20, 50, 30, 60];
+  const labels  = months.length > 0 ? months.map(m => { const [y, mo] = m.split('-'); return new Date(y, mo - 1).toLocaleString('en', { month: 'short' }); }) : [];
+
   const W = container.clientWidth || 500;
   const H = 200;
-  const pad = { top: 20, right: 20, bottom: 20, left: 20 };
+  const pad = { top: 20, right: 20, bottom: labels.length ? 30 : 20, left: 20 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
-  const barW = Math.max(10, Math.min(30, (chartW / dataIn.length) * 0.4));
+  const maxVal = Math.max(...dataIn, ...dataOut, 1);
+  const barW = Math.max(8, Math.min(28, (chartW / dataIn.length) * 0.38));
   const spacing = chartW / dataIn.length;
-  
+
   let rectsHTML = '';
   for (let i = 0; i < dataIn.length; i++) {
     const x = pad.left + i * spacing + spacing / 2;
-    const hIn = (dataIn[i] / 100) * chartH;
-    const hOut = (dataOut[i] / 100) * chartH;
-    const yIn = pad.top + chartH - hIn;
+    const hIn  = (dataIn[i]  / maxVal) * chartH;
+    const hOut = (dataOut[i] / maxVal) * chartH;
+    const yIn  = pad.top + chartH - hIn;
     const yOut = pad.top + chartH - hOut;
-    
     rectsHTML += `
-      <rect x="${x - barW - 2}" y="${yIn}" width="${barW}" height="${hIn}" fill="var(--color-primary)" rx="2"/>
-      <rect x="${x + 2}" y="${yOut}" width="${barW}" height="${hOut}" fill="var(--color-accent-warning)" rx="2"/>
+      <rect x="${x - barW - 2}" y="${yIn}"  width="${barW}" height="${hIn}"  fill="var(--color-primary)" rx="2"/>
+      <rect x="${x + 2}"       y="${yOut}" width="${barW}" height="${hOut}" fill="var(--color-accent-warning)" rx="2"/>
+      ${labels[i] ? `<text x="${x}" y="${H - 6}" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)">${labels[i]}</text>` : ''}
     `;
   }
-  
+
   container.innerHTML = `
     <svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       ${rectsHTML}
@@ -314,12 +354,12 @@ function renderMetricCards() {
   container.innerHTML = html;
 }
 
-function renderTransactions(containerId = 'transactions-container', limit = 5) {
+function renderTransactions(containerId = 'transactions-container', limit = 5, txData = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // BUG-11 FIX: added explicit `limit` param; the function now uses it instead of always slicing 5
-  const txList = allTransactions.slice(0, limit);
+  // H3/L2 FIX: support optional custom dataset for date-range filtering
+  const txList = (txData || allTransactions).slice(0, limit);
   let html = '';
 
   txList.forEach(tx => {
