@@ -936,10 +936,12 @@ function initPreferences() {
       // Update sidebar user name to reflect saved values
       const sidebarName = document.querySelector('.user-name');
       if (sidebarName && (first || last)) sidebarName.textContent = `${first} ${last}`.trim();
-      // M7 FIX: also update the sidebar avatar initials
+      // M7 FIX (v2): safely compute initials — trim whitespace and handle partial names
       const avatar = document.querySelector('.sidebar-footer .avatar');
       if (avatar) {
-        const initials = `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+        const firstInitial = first.trim().charAt(0).toUpperCase();
+        const lastInitial = last.trim().charAt(0).toUpperCase();
+        const initials = (firstInitial + lastInitial).trim();
         if (initials) avatar.textContent = initials;
       }
       // BUG-17 FIX: also persist display preference dropdowns
