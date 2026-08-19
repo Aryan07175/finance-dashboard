@@ -1010,8 +1010,8 @@ function initPreferences() {
     });
   }
 
-  // Update Password button
-  const updatePwBtn = document.querySelector('#view-security .btn-primary');
+  // M5 FIX: target by ID instead of fragile view-scoped .btn-primary selector
+  const updatePwBtn = document.getElementById('update-password-btn');
   if (updatePwBtn) {
     updatePwBtn.addEventListener('click', () => {
       const current = document.getElementById('sec-current-pw')?.value || '';
