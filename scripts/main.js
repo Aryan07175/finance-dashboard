@@ -188,6 +188,18 @@ function navigateTo(viewId) {
       }
     } else {
       view.classList.remove('active');
+      // L5 FIX: clear transaction search + filters when leaving the transactions view
+      if (view.id === 'view-transactions') {
+        const s = document.getElementById('tx-search-input');
+        const t = document.getElementById('tx-type-filter');
+        const c = document.getElementById('tx-category-filter');
+        if (s) s.value = '';
+        if (t) t.value = 'all';
+        if (c) c.value = 'all';
+        // reset filtered set silently (no re-render needed since view is inactive)
+        txFiltered = [...allTransactions];
+        txCurrentPage = 1;
+      }
     }
   });
 }
