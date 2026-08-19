@@ -191,19 +191,75 @@ function initNavigation() {
 
 // BUG-13 FIX: notification badge controlled by data, not hardcoded on
 function initNotifications() {
-  // In production, fetch real unread count from an API.
-  // Using a mock count of 3 to demonstrate the correct behavior.
-  const unreadCount = 3;
+  const notifications = [
+    { title: "Security Alert", message: "New login from Mac OS.", time: "2m ago", read: false },
+    { title: "Payment Received", message: "You received $4,500.00 from Stripe.", time: "1h ago", read: false },
+    { title: "Subscription Active", message: "AWS Cloud Services charged $145.20.", time: "Yesterday", read: false }
+  ];
+  let unreadCount = notifications.filter(n => !n.read).length;
+  
   const badge = document.getElementById('notif-badge');
   const btn = document.getElementById('notif-btn');
+  const panel = document.getElementById('notif-panel');
+  const list = document.getElementById('notif-list');
+  const markReadBtn = document.getElementById('notif-mark-read');
 
   if (badge) badge.style.display = unreadCount > 0 ? 'block' : 'none';
 
-  if (btn) {
-    btn.addEventListener('click', () => {
-      // Mark as read: hide the badge
+  function renderNotifications() {
+    if (!list) return;
+    list.innerHTML = '';
+    if (notifications.length === 0) {
+      list.innerHTML = `<div style="padding: var(--spacing-4); text-align: center; color: var(--color-text-secondary); font-size: var(--font-size-sm);">No notifications</div>`;
+      return;
+    }
+    notifications.forEach((n, idx) => {
+      list.innerHTML += `
+        <div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border); background-color: ${n.read ? 'transparent' : 'rgba(10, 102, 194, 0.05)'}; display: flex; flex-direction: column; gap: 4px; cursor: pointer;" onclick="markSingleRead(${idx})">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <span style="font-weight: var(--font-weight-medium); font-size: var(--font-size-sm); color: var(--color-text-primary);">${n.title}</span>
+            ${!n.read ? `<span style="width: 8px; height: 8px; background-color: var(--color-primary); border-radius: 50%; display: inline-block;"></span>` : ''}
+          </div>
+          <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.4;">${n.message}</span>
+          <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">${n.time}</span>
+        </div>
+      `;
+    });
+  }
+
+  // Define globally so inline onclick works
+  window.markSingleRead = function(idx) {
+    if (!notifications[idx].read) {
+      notifications[idx].read = true;
+      unreadCount = notifications.filter(n => !n.read).length;
+      if (badge) badge.style.display = unreadCount > 0 ? 'block' : 'none';
+      renderNotifications();
+    }
+  };
+
+  renderNotifications();
+
+  if (btn && panel) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // prevent document click from immediately closing it
+      panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+    });
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.style.display = 'none';
+      }
+    });
+  }
+  
+  if (markReadBtn) {
+    markReadBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notifications.forEach(n => n.read = true);
+      unreadCount = 0;
       if (badge) badge.style.display = 'none';
-      showToast(`You have ${unreadCount} notification(s). Full panel coming soon.`, 'info');
+      renderNotifications();
     });
   }
 }
