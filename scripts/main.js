@@ -953,8 +953,8 @@ function initPreferences() {
     });
   }
 
-  // M3 FIX: wire up Send Money button
-  const sendMoneyBtn = document.querySelector('.header-actions .btn-primary');
+  // M3 FIX (v2): target by ID — class selector can match other .btn-primary buttons
+  const sendMoneyBtn = document.getElementById('send-money-btn');
   if (sendMoneyBtn) {
     sendMoneyBtn.addEventListener('click', () => {
       showToast('Send Money feature coming soon! Use your bank app to transfer funds.', 'info');
