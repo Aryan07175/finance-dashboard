@@ -979,10 +979,15 @@ function initPreferences() {
     });
   }
 
-  // Export Report button (Portfolio page)
+  // L3 FIX: visually disable Export Report button with tooltip — it's not yet implemented
   const exportReportBtn = document.querySelector('#view-portfolio .btn-secondary');
   if (exportReportBtn) {
-    exportReportBtn.addEventListener('click', () => {
+    exportReportBtn.setAttribute('disabled', 'true');
+    exportReportBtn.setAttribute('title', 'Portfolio report export is coming soon!');
+    exportReportBtn.style.opacity = '0.5';
+    exportReportBtn.style.cursor = 'not-allowed';
+    exportReportBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       showToast('Portfolio report export is coming soon!', 'info');
     });
   }
