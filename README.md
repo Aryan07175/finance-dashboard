@@ -48,13 +48,3 @@ A modern, responsive, and highly polished financial analytics dashboard built wi
 4. **Launch the Frontend:**
    Open a new terminal or just open the `index.html` file in your preferred web browser. No frontend build steps are required!
 
-## Project Structure
-
-- `index.html`: Main application entry point and layout shell.
-- `styles/`: Contains all CSS files including `design-tokens.css` (design system) and `main.css`.
-- `scripts/api.js`: Frontend client for fetching data from the backend API.
-- `scripts/main.js`: Logic to dynamically render the dashboard metrics, charts, and tables using API data.
-- `backend/`: Node.js Express server directory.
-  - `backend/server.js`: Express application and API route definitions.
-  - `backend/db.js`: SQLite database initialization and seeding scripts.
-- `brandGuidelines.md`: The source of truth for the visual identity and UI/UX design system.
