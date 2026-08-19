@@ -994,13 +994,14 @@ function initPreferences() {
     });
   }
 
-  // L3 FIX: visually disable Export Report button with tooltip — it's not yet implemented
+  // L3 FIX (v2): use aria-disabled + CSS instead of disabled attr — disabled blocks JS click events
   const exportReportBtn = document.querySelector('#view-portfolio .btn-secondary');
   if (exportReportBtn) {
-    exportReportBtn.setAttribute('disabled', 'true');
+    exportReportBtn.setAttribute('aria-disabled', 'true');
     exportReportBtn.setAttribute('title', 'Portfolio report export is coming soon!');
     exportReportBtn.style.opacity = '0.5';
     exportReportBtn.style.cursor = 'not-allowed';
+    exportReportBtn.style.pointerEvents = 'auto'; // keep events alive for toast
     exportReportBtn.addEventListener('click', (e) => {
       e.preventDefault();
       showToast('Portfolio report export is coming soon!', 'info');
