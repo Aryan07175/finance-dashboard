@@ -214,35 +214,48 @@ function initNotifications() {
       return;
     }
     notifications.forEach((n, idx) => {
+      const bg = n.read ? 'transparent' : 'rgba(10, 102, 194, 0.05)';
+      const dot = !n.read ? `<span style="width: 8px; height: 8px; background-color: var(--color-primary); border-radius: 50%; display: inline-block;"></span>` : '';
+      
       list.innerHTML += `
-        <div style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border); background-color: ${n.read ? 'transparent' : 'rgba(10, 102, 194, 0.05)'}; display: flex; flex-direction: column; gap: 4px; cursor: pointer;" onclick="markSingleRead(${idx})">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div class="notif-item" data-idx="${idx}" style="padding: var(--spacing-3) var(--spacing-4); border-bottom: 1px solid var(--color-border); background-color: ${bg}; display: flex; flex-direction: column; gap: 4px; cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none;">
             <span style="font-weight: var(--font-weight-medium); font-size: var(--font-size-sm); color: var(--color-text-primary);">${n.title}</span>
-            ${!n.read ? `<span style="width: 8px; height: 8px; background-color: var(--color-primary); border-radius: 50%; display: inline-block;"></span>` : ''}
+            ${dot}
           </div>
-          <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.4;">${n.message}</span>
-          <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">${n.time}</span>
+          <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.4; pointer-events: none;">${n.message}</span>
+          <span style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); pointer-events: none;">${n.time}</span>
         </div>
       `;
     });
   }
 
-  // Define globally so inline onclick works
-  window.markSingleRead = function(idx) {
-    if (!notifications[idx].read) {
-      notifications[idx].read = true;
-      unreadCount = notifications.filter(n => !n.read).length;
-      if (badge) badge.style.display = unreadCount > 0 ? 'block' : 'none';
-      renderNotifications();
-    }
-  };
-
   renderNotifications();
+
+  if (list) {
+    list.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = e.target.closest('.notif-item');
+      if (item) {
+        const idx = parseInt(item.getAttribute('data-idx'), 10);
+        if (!notifications[idx].read) {
+          notifications[idx].read = true;
+          unreadCount = notifications.filter(n => !n.read).length;
+          if (badge) badge.style.display = unreadCount > 0 ? 'block' : 'none';
+          renderNotifications();
+        }
+      }
+    });
+  }
 
   if (btn && panel) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation(); // prevent document click from immediately closing it
       panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+    });
+    
+    panel.addEventListener('click', (e) => {
+      e.stopPropagation(); // keep panel open when clicking inside it
     });
     
     // Close panel when clicking outside
@@ -263,6 +276,7 @@ function initNotifications() {
     });
   }
 }
+
 
 function renderMetricCards() {
   const container = document.getElementById('metrics-container');
