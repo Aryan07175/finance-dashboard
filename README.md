@@ -44,7 +44,5 @@ A modern, responsive, and highly polished financial analytics dashboard built wi
    npm start
    ```
    The API will run on `http://localhost:3000`.
-
-4. **Launch the Frontend:**
-   Open a new terminal or just open the `index.html` file in your preferred web browser. No frontend build steps are required!
+rred web browser. No frontend build steps are required!
 
