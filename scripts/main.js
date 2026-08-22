@@ -560,7 +560,7 @@ function renderLineChart(range) {
   }
 
   container.innerHTML = `
-    <svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <svg class="line-chart-svg" width="100%" height="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.15"/>
