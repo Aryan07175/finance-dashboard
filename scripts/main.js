@@ -99,27 +99,36 @@ function initDashboard() {
   }
 }
 
-// H3 FIX (v2): Filter by relative position in the sorted dataset, not absolute calendar cutoff.
-// This makes the picker work correctly even with seeded/demo data from a past year.
+// Filter transactions by a named date range.
+// We anchor to the most recent transaction date (not today) so seeded/demo data
+// from past years still produces meaningful filtered subsets.
 function filterTransactionsByRange(transactions, range) {
   if (!transactions.length) return [];
-  // Sort newest first
+
+  // Sort newest first so we can find the latest date easily
   const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-  const total = sorted.length;
+
+  // Anchor to the newest transaction date rather than Date.now()
+  const newestDate = new Date(sorted[0].date);
+
+  let cutoffDate;
   if (range === 'Last 7 Days') {
-    // ~25% most recent transactions
-    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.25)));
+    cutoffDate = new Date(newestDate);
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
   } else if (range === 'Last 30 Days') {
-    // ~50% most recent transactions
-    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.5)));
+    cutoffDate = new Date(newestDate);
+    cutoffDate.setDate(cutoffDate.getDate() - 30);
   } else if (range === 'Last 3 Months') {
-    // ~75% most recent transactions
-    return sorted.slice(0, Math.max(1, Math.ceil(total * 0.75)));
+    cutoffDate = new Date(newestDate);
+    cutoffDate.setMonth(cutoffDate.getMonth() - 3);
   } else {
-    // This Year / default — all
+    // 'This Year' or default — return all (already sorted)
     return sorted;
   }
+
+  return sorted.filter(tx => new Date(tx.date) >= cutoffDate);
 }
+
 
 // L2 FIX: renderCashFlowChart now derives real income/expense data from transactions
 function renderCashFlowChart(transactions = []) {
