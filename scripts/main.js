@@ -91,7 +91,11 @@ function initDashboard() {
         showToast(`Date range set to: ${range}`);
       });
     });
-    document.addEventListener('click', () => { dateDropdown.style.display = 'none'; });
+    document.addEventListener('click', (e) => {
+      if (!dateDropdown.contains(e.target) && !dateBtn.contains(e.target)) {
+        dateDropdown.style.display = 'none';
+      }
+    });
   }
 }
 
