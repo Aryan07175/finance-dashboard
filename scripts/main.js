@@ -991,7 +991,7 @@ function initPreferences() {
   }
 
   // M4 FIX: Upload Photo opens a real file picker and previews in sidebar avatar
-  const uploadPhotoBtn = document.querySelector('.profile-avatar-row .btn-secondary');
+  const uploadPhotoBtn = document.getElementById('upload-photo-btn');
   if (uploadPhotoBtn) {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -1023,7 +1023,7 @@ function initPreferences() {
   }
 
   // Export CSV button (Transactions page)
-  const exportCsvBtn = document.querySelector('#view-transactions .btn-secondary');
+  const exportCsvBtn = document.getElementById('export-csv-btn');
   if (exportCsvBtn) {
     exportCsvBtn.addEventListener('click', () => {
       if (!allTransactions.length) { showToast('No transactions to export.', 'error'); return; }
@@ -1050,7 +1050,7 @@ function initPreferences() {
   }
 
   // L3 FIX (v2): use aria-disabled + CSS instead of disabled attr — disabled blocks JS click events
-  const exportReportBtn = document.querySelector('#view-portfolio .btn-secondary');
+  const exportReportBtn = document.getElementById('export-report-btn');
   if (exportReportBtn) {
     exportReportBtn.setAttribute('aria-disabled', 'true');
     exportReportBtn.setAttribute('title', 'Portfolio report export is coming soon!');
