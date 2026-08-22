@@ -679,16 +679,41 @@ function renderFullTxTable() {
   if (pagination) {
     const startIdx = txFiltered.length === 0 ? 0 : start + 1;
     const endIdx = Math.min(start + TX_PAGE_SIZE, txFiltered.length);
+
+    // Build windowed page buttons: always show first, last, current ±2, with ellipsis
+    const buildPageButtons = () => {
+      if (totalPages <= 1) return '';
+      const pages = [];
+      const delta = 2;
+      const range = [];
+      for (let i = Math.max(2, txCurrentPage - delta); i <= Math.min(totalPages - 1, txCurrentPage + delta); i++) {
+        range.push(i);
+      }
+      // Always include page 1
+      pages.push(1);
+      if (range.length && range[0] > 2) pages.push('...');
+      pages.push(...range);
+      if (range.length && range[range.length - 1] < totalPages - 1) pages.push('...');
+      if (totalPages > 1) pages.push(totalPages);
+
+      return pages.map(p =>
+        p === '...'
+          ? `<span class="page-ellipsis">…</span>`
+          : `<button class="page-btn ${p === txCurrentPage ? 'active' : ''}" data-page="${p}">${p}</button>`
+      ).join('');
+    };
+
     pagination.innerHTML = `
       <span>Showing ${startIdx}–${endIdx} of ${txFiltered.length} transactions</span>
       <div class="pagination-btns">
         <button class="page-btn" id="prev-page" ${txCurrentPage === 1 ? 'disabled' : ''}><i class="ph ph-caret-left"></i></button>
-        ${Array.from({ length: totalPages }, (_, i) => `<button class="page-btn ${i + 1 === txCurrentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`).join('')}
+        ${buildPageButtons()}
         <button class="page-btn" id="next-page" ${txCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''}><i class="ph ph-caret-right"></i></button>
       </div>`;
     // BUG-12 FIX: listeners are attached via delegation in initTransactions(), not here
   }
 }
+
 
 function applyTxFilters() {
   const search = document.getElementById('tx-search-input')?.value.toLowerCase() || '';

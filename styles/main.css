@@ -508,6 +508,17 @@
   cursor: not-allowed;
 }
 
+.page-ellipsis {
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  user-select: none;
+}
+
 /* Empty state */
 .empty-state {
   display: flex;
