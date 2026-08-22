@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initDashboard() {
-  renderMetricCards();
+  renderMetricCards('metrics-container', mockMetrics);
   renderTransactions('transactions-container');
   // BUG-03 FIX: defer chart render so clientWidth is measured after #app becomes visible
   setTimeout(() => renderCashFlowChart(allTransactions), 0);
@@ -341,37 +341,34 @@ function initNotifications() {
 }
 
 
-function renderMetricCards() {
-  const container = document.getElementById('metrics-container');
+/**
+ * Shared metric card renderer — used by Dashboard, Portfolio, and Transactions pages.
+ * @param {string} containerId - The ID of the container element to render into.
+ * @param {Array}  metrics     - Array of metric objects.
+ */
+function renderMetricCards(containerId, metrics) {
+  const container = document.getElementById(containerId);
   if (!container) return;
-  
   let html = '';
-  
-  mockMetrics.forEach(metric => {
+  metrics.forEach(metric => {
     const trendClass = metric.trend === 'up' ? 'trend-up' : 'trend-down';
-    const trendIcon = metric.trend === 'up' ? 'ph-arrow-up-right' : 'ph-arrow-down-right';
-    
+    const trendIcon  = metric.trend === 'up' ? 'ph-arrow-up-right' : 'ph-arrow-down-right';
     html += `
       <div class="metric-card">
         <div class="metric-header">
-          <div class="metric-icon ${metric.colorClass}">
-            <i class="ph ${metric.iconClass}"></i>
-          </div>
+          <div class="metric-icon ${metric.colorClass}"><i class="ph ${metric.iconClass}"></i></div>
           <div class="metric-title">${metric.title}</div>
         </div>
         <div class="metric-value">${metric.value}</div>
         <div class="metric-trend">
-          <span class="${trendClass}">
-            <i class="ph ${trendIcon}"></i> ${metric.trendValue}
-          </span>
+          <span class="${trendClass}"><i class="ph ${trendIcon}"></i> ${metric.trendValue}</span>
           <span class="trend-text">${metric.trendText}</span>
         </div>
-      </div>
-    `;
+      </div>`;
   });
-  
   container.innerHTML = html;
 }
+
 
 function renderTransactions(containerId = 'transactions-container', limit = 5, txData = null) {
   const container = document.getElementById(containerId);
@@ -421,26 +418,7 @@ function initPortfolio() {
 }
 
 function renderPortfolioMetrics() {
-  const container = document.getElementById('portfolio-metrics-container');
-  if (!container) return;
-  let html = '';
-  portfolioMetrics.forEach(metric => {
-    const trendClass = metric.trend === 'up' ? 'trend-up' : 'trend-down';
-    const trendIcon = metric.trend === 'up' ? 'ph-arrow-up-right' : 'ph-arrow-down-right';
-    html += `
-      <div class="metric-card">
-        <div class="metric-header">
-          <div class="metric-icon ${metric.colorClass}"><i class="ph ${metric.iconClass}"></i></div>
-          <div class="metric-title">${metric.title}</div>
-        </div>
-        <div class="metric-value">${metric.value}</div>
-        <div class="metric-trend">
-          <span class="${trendClass}"><i class="ph ${trendIcon}"></i> ${metric.trendValue}</span>
-          <span class="trend-text">${metric.trendText}</span>
-        </div>
-      </div>`;
-  });
-  container.innerHTML = html;
+  renderMetricCards('portfolio-metrics-container', portfolioMetrics);
 }
 
 function renderDonutChart() {
@@ -618,35 +596,17 @@ function initTransactions() {
 }
 
 function renderTxSummary() {
-  const container = document.getElementById('tx-summary-container');
-  if (!container) return;
-  const income = allTransactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const income   = allTransactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
   const expenses = allTransactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
   const net = income - expenses;
   const fmt = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
   const metrics = [
-    { title: 'Total Income', value: fmt(income), trend: 'up', trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-up', colorClass: 'green' },
-    { title: 'Total Expenses', value: fmt(expenses), trend: 'down', trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`, trendText: 'this period', iconClass: 'ph-trend-down', colorClass: 'purple' },
+    { title: 'Total Income',    value: fmt(income),   trend: 'up',              trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-up',         colorClass: 'green'  },
+    { title: 'Total Expenses',  value: fmt(expenses), trend: 'down',            trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-down',       colorClass: 'purple' },
     // BUG-10 FIX: show savings rate (net / income) as a meaningful trend value
-    { title: 'Net Cash Flow', value: fmt(net), trend: net > 0 ? 'up' : 'down', trendValue: income > 0 ? `${((net / income) * 100).toFixed(1)}% savings rate` : '–', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue' },
+    { title: 'Net Cash Flow',   value: fmt(net),      trend: net > 0 ? 'up' : 'down', trendValue: income > 0 ? `${((net / income) * 100).toFixed(1)}% savings rate` : '–', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue'   },
   ];
-  let html = '';
-  metrics.forEach(metric => {
-    const trendClass = metric.trend === 'up' ? 'trend-up' : 'trend-down';
-    const trendIcon = metric.trend === 'up' ? 'ph-arrow-up-right' : 'ph-arrow-down-right';
-    html += `<div class="metric-card">
-      <div class="metric-header">
-        <div class="metric-icon ${metric.colorClass}"><i class="ph ${metric.iconClass}"></i></div>
-        <div class="metric-title">${metric.title}</div>
-      </div>
-      <div class="metric-value">${metric.value}</div>
-      <div class="metric-trend">
-        <span class="${trendClass}"><i class="ph ${trendIcon}"></i> ${metric.trendValue}</span>
-        <span class="trend-text">${metric.trendText}</span>
-      </div>
-    </div>`;
-  });
-  container.innerHTML = html;
+  renderMetricCards('tx-summary-container', metrics);
 }
 
 function renderFullTxTable() {
