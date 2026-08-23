@@ -5,6 +5,11 @@ const db = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// BUG-G FIX: CORS is intentionally unrestricted here for local development.
+// TODO: Before deploying to production, replace this with an explicit origin
+// allowlist, e.g.:
+//   app.use(cors({ origin: ['https://yourdomain.com'] }))
+// Leaving CORS fully open in production exposes the API to any web origin.
 app.use(cors());
 app.use(express.json());
 
