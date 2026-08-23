@@ -233,6 +233,10 @@ function navigateTo(viewId) {
         if (s) s.value = '';
         if (t) t.value = 'all';
         if (c) c.value = 'all';
+        // BUG-D FIX: also clear the global header search so it doesn't retain
+        // stale text that would mislead the user on the next Transactions visit.
+        const globalSearch = document.querySelector('.search-input');
+        if (globalSearch) globalSearch.value = '';
         // reset filtered set silently (no re-render needed since view is inactive)
         txFiltered = [...allTransactions];
         txCurrentPage = 1;
