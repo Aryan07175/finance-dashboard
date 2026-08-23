@@ -1,3 +1,13 @@
+/* BUG-F FIX: @keyframes fadeIn defined first, at global scope, so it is
+   accessible to both the CSS animation on .view-section.active AND the
+   inline JS-injected `animation: fadeIn 0.2s ease-out` used by showToast().
+   Some browsers only resolve @keyframes that are declared before the
+   animation property in document order. */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Global Loader and Error States */
 .global-loader, .global-error {
   position: fixed;
@@ -106,11 +116,6 @@
 /* Views */
 .view-section {
   display: none;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* BUG-18 FIX: view-section.active is a flex column container that fills space;
