@@ -1,3 +1,24 @@
+// BUG-A FIX: Reliably parse date strings like "Nov 01, 2023" without relying on
+// browser-specific Date constructor behaviour (which treats such strings as local
+// time in some engines and as UTC/invalid in others).
+const MONTH_ABBR = {
+  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+  Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+};
+function parseDate(str) {
+  if (!str) return new Date(NaN);
+  // Matches "Mon DD, YYYY" format, e.g. "Nov 01, 2023"
+  const match = str.match(/^([A-Za-z]{3})\s+(\d{1,2}),?\s+(\d{4})$/);
+  if (match) {
+    const month = MONTH_ABBR[match[1]];
+    if (month !== undefined) {
+      return new Date(Number(match[3]), month, Number(match[2]));
+    }
+  }
+  // Fallback for ISO strings or other parseable formats
+  return new Date(str);
+}
+
 let mockMetrics = [];
 let allTransactions = [];
 let portfolioAssets = [];
@@ -105,11 +126,11 @@ function initDashboard() {
 function filterTransactionsByRange(transactions, range) {
   if (!transactions.length) return [];
 
-  // Sort newest first so we can find the latest date easily
-  const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+  // BUG-A FIX: use parseDate() instead of new Date() for consistent cross-browser parsing
+  const sorted = [...transactions].sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
   // Anchor to the newest transaction date rather than Date.now()
-  const newestDate = new Date(sorted[0].date);
+  const newestDate = parseDate(sorted[0].date);
 
   let cutoffDate;
   if (range === 'Last 7 Days') {
@@ -126,7 +147,7 @@ function filterTransactionsByRange(transactions, range) {
     return sorted;
   }
 
-  return sorted.filter(tx => new Date(tx.date) >= cutoffDate);
+  return sorted.filter(tx => parseDate(tx.date) >= cutoffDate);
 }
 
 
