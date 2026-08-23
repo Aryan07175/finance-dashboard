@@ -1,3 +1,4 @@
+require('dotenv').config(); // load .env variables (PORT, etc.) before anything else
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
@@ -76,10 +77,21 @@ app.get('/api/dashboard/metrics', async (req, res) => {
   }
 });
 
-// 2. Transactions
+// 2. Transactions — ORDER BY date DESC ensures newest-first regardless of
+// insert order, which matters when transactions are added individually later.
 app.get('/api/transactions', async (req, res) => {
   try {
-    const rows = await queryAll('SELECT * FROM transactions');
+    const rows = await queryAll(
+      `SELECT * FROM transactions
+       ORDER BY date(substr(date,8,4)||'-'||
+         CASE substr(date,1,3)
+           WHEN 'Jan' THEN '01' WHEN 'Feb' THEN '02' WHEN 'Mar' THEN '03'
+           WHEN 'Apr' THEN '04' WHEN 'May' THEN '05' WHEN 'Jun' THEN '06'
+           WHEN 'Jul' THEN '07' WHEN 'Aug' THEN '08' WHEN 'Sep' THEN '09'
+           WHEN 'Oct' THEN '10' WHEN 'Nov' THEN '11' ELSE '12'
+         END||'-'||printf('%02d',CAST(substr(date,5,2) AS INTEGER))
+       ) DESC`
+    );
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
