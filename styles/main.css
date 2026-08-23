@@ -106,8 +106,11 @@
   position: relative;
 }
 
-/* Dashboard View */
-.dashboard-view {
+/* BUG-I FIX: scope the padding rule to #view-dashboard so it only applies
+   to the actual dashboard view container. Using the bare .dashboard-view
+   class was fragile — if the class were reused on another element (e.g., a
+   component or a future view) the padding would silently apply there too. */
+#view-dashboard.dashboard-view {
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-8);
