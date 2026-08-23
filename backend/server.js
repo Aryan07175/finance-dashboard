@@ -32,13 +32,16 @@ app.get('/api/dashboard/metrics', async (req, res) => {
     // Net balance = sum of all amounts (income already positive, expenses already negative)
     const balance = transactions.reduce((s, t) => s + t.amount, 0);
 
+    // BUG-C FIX: trendValue percentages below are static placeholder estimates.
+    // They should be replaced with real period-over-period calculations once
+    // a time-series or historical_metrics table is available.
     res.json({
       metrics: [
         {
           title: 'Net Balance',
           value: `$${balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
           trend: balance >= 0 ? 'up' : 'down',
-          trendValue: '2.5%',
+          trendValue: '2.5% (est.)',
           trendText: 'vs last month',
           iconClass: 'ph-wallet',
           colorClass: 'blue'
@@ -47,7 +50,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
           title: 'Total Income',
           value: `$${income.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
           trend: 'up',
-          trendValue: '12.4%',
+          trendValue: '12.4% (est.)',
           trendText: 'vs last month',
           iconClass: 'ph-trend-up',
           colorClass: 'green'
@@ -56,7 +59,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
           title: 'Total Expenses',
           value: `$${expenses.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
           trend: 'down',
-          trendValue: '4.1%',
+          trendValue: '4.1% (est.)',
           trendText: 'vs last month',
           iconClass: 'ph-trend-down',
           colorClass: 'purple'
