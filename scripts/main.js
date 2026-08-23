@@ -19,6 +19,16 @@ function parseDate(str) {
   return new Date(str);
 }
 
+// BUG-H FIX: shared date display formatter — re-formats raw DB date strings
+// (e.g. "Nov 01, 2023") to a consistent locale-friendly display string
+// (e.g. "Nov 1, 2023") by round-tripping through parseDate() and
+// Intl.DateTimeFormat so leading zeros and locale quirks are handled uniformly.
+function formatDisplayDate(str) {
+  const d = parseDate(str);
+  if (isNaN(d)) return str; // fallback to raw string if unparseable
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(d);
+}
+
 let mockMetrics = [];
 let allTransactions = [];
 let portfolioAssets = [];
@@ -431,7 +441,7 @@ function renderTransactions(containerId = 'transactions-container', limit = 5, t
           </div>
         </td>
         <td><span class="tx-category">${tx.category}</span></td>
-        <td><span class="tx-date">${tx.date}</span></td>
+        <td><span class="tx-date">${formatDisplayDate(tx.date)}</span></td>
         <td class="text-right"><span class="tx-amount ${amountClass}">${formattedAmount}</span></td>
       </tr>`;
   });
@@ -671,7 +681,7 @@ function renderFullTxTable() {
           <div class="tx-details"><span class="tx-name">${tx.name}</span><span class="tx-merchant">${tx.merchant}</span></div>
         </div></td>
         <td><span class="tx-category">${tx.category}</span></td>
-        <td><span class="tx-date">${tx.date}</span></td>
+        <td><span class="tx-date">${formatDisplayDate(tx.date)}</span></td>
         <td><span class="status-badge ${tx.status}">${tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}</span></td>
         <td class="text-right"><span class="tx-amount ${amtClass}">${fmt}</span></td>
       </tr>`;
