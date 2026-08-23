@@ -644,9 +644,15 @@ function renderFullTxTable() {
   const pagination = document.getElementById('tx-pagination');
   if (!tbody) return;
 
+  // BUG-B FIX: clamp txCurrentPage if it exceeds totalPages — this happens
+  // when the user navigates away, returns, and the filtered set is smaller
+  // (e.g. a previous filter left them on page 3 of 3, but the view reset
+  // txFiltered to the full set which now has fewer pages under a new filter).
+  const totalPages = Math.ceil(txFiltered.length / TX_PAGE_SIZE) || 1;
+  if (txCurrentPage > totalPages) txCurrentPage = 1;
+
   const start = (txCurrentPage - 1) * TX_PAGE_SIZE;
   const page = txFiltered.slice(start, start + TX_PAGE_SIZE);
-  const totalPages = Math.ceil(txFiltered.length / TX_PAGE_SIZE);
 
   if (page.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ph ph-magnifying-glass"></i><p>No transactions match your filters.</p></div></td></tr>`;
