@@ -156,6 +156,35 @@ app.get('/api/sessions', async (req, res) => {
   }
 });
 
+// =====================
+// ERROR HANDLING
+// =====================
+
+// 405 Method Not Allowed — catches requests to /api/* paths with a wrong
+// HTTP verb (e.g. POST /api/transactions). Registered before the 404 handler.
+// Express 5 uses path-to-regexp v8 — wildcard syntax is '{*path}' not '/*'.
+app.all('/api/{*path}', (req, res) => {
+  res.status(405).json({ error: `Method ${req.method} not allowed on ${req.path}` });
+});
+
+// 404 Not Found — catches any request that didn't match a registered route.
+// Returns JSON so the frontend fetchWithHandling() can parse and display it
+// instead of crashing on an unexpected HTML response body.
+app.use((req, res) => {
+  res.status(404).json({ error: `Cannot ${req.method} ${req.path}` });
+});
+
+// Global error handler (4-param signature required by Express).
+// Catches any error thrown/rejected inside async route handlers that isn't
+// already caught by the route's own try/catch, and returns a structured JSON
+// error response instead of Express 5's default HTML error page.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[Unhandled route error]', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ error: err.message || 'Internal server error' });
+});
+
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
