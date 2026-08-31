@@ -90,7 +90,7 @@ app.get('/api/transactions', async (req, res) => {
   try {
     const rows = await queryAll(
       `SELECT * FROM transactions
-       ORDER BY date(substr(date,8,4)||'-'||
+       ORDER BY date(substr(date,9,4)||'-'||
          CASE substr(date,1,3)
            WHEN 'Jan' THEN '01' WHEN 'Feb' THEN '02' WHEN 'Mar' THEN '03'
            WHEN 'Apr' THEN '04' WHEN 'May' THEN '05' WHEN 'Jun' THEN '06'
