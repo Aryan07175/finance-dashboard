@@ -170,7 +170,7 @@ function renderCashFlowChart(transactions = []) {
   // Group by month: last 7 distinct months found in data
   const monthMap = {};
   transactions.forEach(tx => {
-    const d = new Date(tx.date);
+    const d = parseDate(tx.date);
     if (isNaN(d)) return;
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     if (!monthMap[key]) monthMap[key] = { in: 0, out: 0 };
