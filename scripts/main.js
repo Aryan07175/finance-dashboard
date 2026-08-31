@@ -119,6 +119,7 @@ function initDashboard() {
         const filtered = filterTransactionsByRange(allTransactions, range);
         renderTransactions('transactions-container', 5, filtered);
         renderCashFlowChart(filtered);
+        updateDashboardMetrics(filtered);
         showToast(`Date range set to: ${range}`);
       });
     });
@@ -129,6 +130,24 @@ function initDashboard() {
     });
   }
 }
+
+function updateDashboardMetrics(filtered) {
+  const income = filtered.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expenses = filtered.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const net = income - expenses;
+  
+  const fmt = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(v);
+
+  if (mockMetrics.length >= 3) {
+    mockMetrics[0].value = fmt(net);
+    mockMetrics[0].trend = net >= 0 ? 'up' : 'down';
+    mockMetrics[1].value = fmt(income);
+    mockMetrics[2].value = fmt(expenses);
+  }
+  
+  renderMetricCards('metrics-container', mockMetrics);
+}
+
 
 // Filter transactions by a named date range.
 // We anchor to the most recent transaction date (not today) so seeded/demo data
@@ -422,6 +441,11 @@ function renderTransactions(containerId = 'transactions-container', limit = 5, t
   // H3/L2 FIX: support optional custom dataset for date-range filtering
   const txList = (txData || allTransactions).slice(0, limit);
   let html = '';
+
+  if (txList.length === 0) {
+    container.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="ph ph-receipt"></i><p>No transactions in this period.</p></div></td></tr>`;
+    return;
+  }
 
   txList.forEach(tx => {
     const formattedAmount = new Intl.NumberFormat('en-US', {
