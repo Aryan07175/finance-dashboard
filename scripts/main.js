@@ -986,8 +986,21 @@ function initPreferences() {
   });
   const savedFirstname = localStorage.getItem('pref-firstname');
   const savedLastname = localStorage.getItem('pref-lastname');
+  const savedAvatar = localStorage.getItem('pref-avatar');
   if (savedFirstname) { const el = document.getElementById('pref-firstname'); if (el) el.value = savedFirstname; }
   if (savedLastname) { const el = document.getElementById('pref-lastname'); if (el) el.value = savedLastname; }
+  
+  if (savedAvatar) {
+    const profileAvatar = document.querySelector('.profile-avatar-row .avatar');
+    const sidebarAvatar = document.querySelector('.sidebar-footer .avatar');
+    [profileAvatar, sidebarAvatar].forEach(av => {
+      if (!av) return;
+      av.style.backgroundImage = `url(${savedAvatar})`;
+      av.style.backgroundSize = 'cover';
+      av.style.backgroundPosition = 'center';
+      av.textContent = ''; // clear initials
+    });
+  }
 
   // Save Profile button
   const saveProfileBtn = document.getElementById('save-profile-btn');
@@ -1002,12 +1015,17 @@ function initPreferences() {
       const sidebarName = document.querySelector('.user-name');
       if (sidebarName && (first || last)) sidebarName.textContent = `${first} ${last}`.trim();
       // M7 FIX (v2): safely compute initials — trim whitespace and handle partial names
-      const avatar = document.querySelector('.sidebar-footer .avatar');
-      if (avatar) {
+      const sidebarAvatar = document.querySelector('.sidebar-footer .avatar');
+      const profileAvatar = document.querySelector('.profile-avatar-row .avatar');
+      if (sidebarAvatar && profileAvatar) {
         const firstInitial = first.trim().charAt(0).toUpperCase();
         const lastInitial = last.trim().charAt(0).toUpperCase();
         const initials = (firstInitial + lastInitial).trim();
-        if (initials) avatar.textContent = initials;
+        // Only set initials if there is no custom avatar image
+        if (initials && !localStorage.getItem('pref-avatar')) {
+          sidebarAvatar.textContent = initials;
+          profileAvatar.textContent = initials;
+        }
       }
       // BUG-17 FIX: also persist display preference dropdowns
       prefFields.forEach(id => {
@@ -1052,6 +1070,7 @@ function initPreferences() {
           av.style.backgroundPosition = 'center';
           av.textContent = ''; // clear initials
         });
+        localStorage.setItem('pref-avatar', e.target.result);
         showToast('✓ Profile photo updated!', 'success');
       };
       reader.readAsDataURL(file);
