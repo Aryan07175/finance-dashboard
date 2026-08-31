@@ -640,13 +640,13 @@ function initTransactions() {
 }
 
 function renderTxSummary() {
-  const income   = allTransactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-  const expenses = allTransactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const income   = txFiltered.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const expenses = txFiltered.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
   const net = income - expenses;
   const fmt = (v) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
   const metrics = [
-    { title: 'Total Income',    value: fmt(income),   trend: 'up',              trendValue: `${allTransactions.filter(t=>t.amount>0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-up',         colorClass: 'green'  },
-    { title: 'Total Expenses',  value: fmt(expenses), trend: 'down',            trendValue: `${allTransactions.filter(t=>t.amount<0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-down',       colorClass: 'purple' },
+    { title: 'Total Income',    value: fmt(income),   trend: 'up',              trendValue: `${txFiltered.filter(t=>t.amount>0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-up',         colorClass: 'green'  },
+    { title: 'Total Expenses',  value: fmt(expenses), trend: 'down',            trendValue: `${txFiltered.filter(t=>t.amount<0).length} txns`,                   trendText: 'this period',          iconClass: 'ph-trend-down',       colorClass: 'purple' },
     // BUG-10 FIX: show savings rate (net / income) as a meaningful trend value
     { title: 'Net Cash Flow',   value: fmt(net),      trend: net > 0 ? 'up' : 'down', trendValue: income > 0 ? `${((net / income) * 100).toFixed(1)}% savings rate` : '–', trendText: 'income minus expenses', iconClass: 'ph-arrows-left-right', colorClass: 'blue'   },
   ];
@@ -742,6 +742,7 @@ function applyTxFilters() {
   });
 
   txCurrentPage = 1;
+  renderTxSummary();
   renderFullTxTable();
 }
 
