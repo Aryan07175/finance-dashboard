@@ -917,7 +917,7 @@ function renderCardActivity() {
         <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
         <div class="tx-details"><span class="tx-name">${tx.name}</span><span class="tx-merchant">${tx.merchant}</span></div>
       </div></td>
-      <td><span class="tx-date">${tx.date}</span></td>
+      <td><span class="tx-date">${formatDisplayDate(tx.date)}</span></td>
       <td class="text-right"><span class="tx-amount ${amtClass}">${fmt}</span></td>
     </tr>`;
   });
@@ -1190,7 +1190,7 @@ function initPasswordStrength() {
       { pct: '100%', color: '#10B981', text: 'Password strength: Strong' },
     ];
 
-    const lvl = val.length === 0 ? levels[0] : levels[Math.min(score, 4)];
+    const lvl = val.length === 0 ? levels[0] : levels[Math.max(1, Math.min(score, 4))];
     bar.style.width = lvl.pct;
     bar.style.backgroundColor = lvl.color;
     label.textContent = lvl.text;
