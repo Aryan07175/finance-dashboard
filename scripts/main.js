@@ -152,8 +152,9 @@ function filterTransactionsByRange(transactions, range) {
   } else if (range === 'Last 3 Months') {
     cutoffDate = new Date(newestDate);
     cutoffDate.setMonth(cutoffDate.getMonth() - 3);
+  } else if (range === 'This Year') {
+    cutoffDate = new Date(newestDate.getFullYear(), 0, 1);
   } else {
-    // 'This Year' or default — return all (already sorted)
     return sorted;
   }
 
