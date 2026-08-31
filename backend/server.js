@@ -6,12 +6,19 @@ const db = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// BUG-G FIX: CORS is intentionally unrestricted here for local development.
-// TODO: Before deploying to production, replace this with an explicit origin
-// allowlist, e.g.:
-//   app.use(cors({ origin: ['https://yourdomain.com'] }))
-// Leaving CORS fully open in production exposes the API to any web origin.
-app.use(cors());
+// BUG-G FIX: Restrict CORS origin in production, while keeping it open for development.
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:50393'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (process.env.NODE_ENV !== 'production' || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'));
+    }
+  }
+}));
 app.use(express.json());
 
 // Helper function for database queries
