@@ -19,6 +19,17 @@ function parseDate(str) {
   return new Date(str);
 }
 
+// Helper: Escape HTML to prevent XSS
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // BUG-H FIX: shared date display formatter — re-formats raw DB date strings
 // (e.g. "Nov 01, 2023") to a consistent locale-friendly display string
 // (e.g. "Nov 1, 2023") by round-tripping through parseDate() and
@@ -460,12 +471,12 @@ function renderTransactions(containerId = 'transactions-container', limit = 5, t
           <div class="tx-item">
             <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
             <div class="tx-details">
-              <span class="tx-name">${tx.name}</span>
-              <span class="tx-merchant">${tx.merchant}</span>
+              <span class="tx-name">${escapeHTML(tx.name)}</span>
+              <span class="tx-merchant">${escapeHTML(tx.merchant)}</span>
             </div>
           </div>
         </td>
-        <td><span class="tx-category">${tx.category}</span></td>
+        <td><span class="tx-category">${escapeHTML(tx.category)}</span></td>
         <td><span class="tx-date">${formatDisplayDate(tx.date)}</span></td>
         <td class="text-right"><span class="tx-amount ${amountClass}">${formattedAmount}</span></td>
       </tr>`;
@@ -585,12 +596,18 @@ function renderLineChart(range) {
   const pad = { top: 20, right: 20, bottom: 30, left: 50 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
-  const minVal = Math.min(...data) * 0.99;
-  const maxVal = Math.max(...data) * 1.01;
-
-  if (data.length <= 1) return; // M4 FIX: Guard division by zero
+  const min = Math.min(...data) * 0.99;
+  const max = Math.max(...data) * 1.01;
+  let rangeVal = max - min;
+  
+  // Guard against division by zero if all data points are the same
+  if (rangeVal === 0) {
+    rangeVal = 1; 
+  }
+  
+  if (data.length <= 1) return; // M4 FIX: Guard division by zero in X axis
   const xStep = chartW / (data.length - 1);
-  const yScale = (v) => chartH - ((v - minVal) / (maxVal - minVal)) * chartH;
+  const yScale = (v) => chartH - ((v - min) / rangeVal) * chartH;
 
   const points = data.map((v, i) => `${pad.left + i * xStep},${pad.top + yScale(v)}`);
   const pathD = `M ${points.join(' L ')}`;
@@ -600,7 +617,7 @@ function renderLineChart(range) {
   const yTicks = 4;
   let yAxisHTML = '';
   for (let i = 0; i <= yTicks; i++) {
-    const v = minVal + ((maxVal - minVal) * i / yTicks);
+    const v = min + (rangeVal * i / yTicks);
     const y = pad.top + yScale(v);
     // BUG-09 FIX: perfData values are stored as index values in thousands
     // (e.g. 124.5 = $124,500). The * 1000 is now explicitly documented here.
@@ -703,9 +720,9 @@ function renderFullTxTable() {
       html += `<tr>
         <td><div class="tx-item">
           <div class="tx-icon"><i class="ph ${tx.icon}"></i></div>
-          <div class="tx-details"><span class="tx-name">${tx.name}</span><span class="tx-merchant">${tx.merchant}</span></div>
+          <div class="tx-details"><span class="tx-name">${escapeHTML(tx.name)}</span><span class="tx-merchant">${escapeHTML(tx.merchant)}</span></div>
         </div></td>
-        <td><span class="tx-category">${tx.category}</span></td>
+        <td><span class="tx-category">${escapeHTML(tx.category)}</span></td>
         <td><span class="tx-date">${formatDisplayDate(tx.date)}</span></td>
         <td><span class="status-badge ${tx.status}">${tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}</span></td>
         <td class="text-right"><span class="tx-amount ${amtClass}">${fmt}</span></td>
