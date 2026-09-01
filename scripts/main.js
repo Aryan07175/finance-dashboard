@@ -495,6 +495,20 @@ function initPortfolio() {
   renderHoldingsTable();
   // Line chart is now lazy-rendered via navigation activation (C5 fix)
   initPerfTabs();
+
+  // Re-render line chart on window resize to prevent SVG text distortion/overflow
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const activeView = document.querySelector('.view-section.active');
+      if (activeView && activeView.id === 'view-portfolio') {
+        const activeTab = document.querySelector('.perf-tab.active');
+        const range = activeTab ? activeTab.getAttribute('data-range') : '1W';
+        renderLineChart(range);
+      }
+    }, 200);
+  });
 }
 
 function renderPortfolioMetrics() {
@@ -591,13 +605,21 @@ function renderLineChart(range) {
   const container = document.getElementById('line-chart-container');
   if (!container) return;
   const data = perfData[range];
-  const W = container.clientWidth || 700;
+  if (!data || data.length <= 1) return; // Guard undefined or empty data
+  
+  const W = container.clientWidth;
+  if (!W) return; // Do not render if container is hidden (width 0)
   const H = 200;
   const pad = { top: 20, right: 20, bottom: 30, left: 50 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
-  const min = Math.min(...data) * 0.99;
-  const max = Math.max(...data) * 1.01;
+  const trueMin = Math.min(...data);
+  const trueMax = Math.max(...data);
+  const dataRange = (trueMax - trueMin) || 1; // guard 0
+  
+  // Add 5% padding to top and bottom based on the total data range (works for negatives too)
+  const min = trueMin - (dataRange * 0.05);
+  const max = trueMax + (dataRange * 0.05);
   let rangeVal = max - min;
   
   // Guard against division by zero if all data points are the same
@@ -605,7 +627,6 @@ function renderLineChart(range) {
     rangeVal = 1; 
   }
   
-  if (data.length <= 1) return; // M4 FIX: Guard division by zero in X axis
   const xStep = chartW / (data.length - 1);
   const yScale = (v) => chartH - ((v - min) / rangeVal) * chartH;
 
