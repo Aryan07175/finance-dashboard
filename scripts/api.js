@@ -27,4 +27,17 @@ const api = {
   getPortfolio: () => fetchWithHandling(`${API_BASE}/portfolio`),
   getCards: () => fetchWithHandling(`${API_BASE}/cards`),
   getSessions: () => fetchWithHandling(`${API_BASE}/sessions`),
+  sendMoney: async (payload) => {
+    const res = await fetch(`${API_BASE}/transactions/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      let errorMsg = `HTTP error! status: ${res.status}`;
+      try { const errData = await res.json(); if (errData.error) errorMsg = errData.error; } catch (e) {}
+      throw new Error(errorMsg);
+    }
+    return await res.json();
+  }
 };
