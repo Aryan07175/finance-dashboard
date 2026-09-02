@@ -212,7 +212,7 @@ function renderCashFlowChart(transactions = []) {
   // Fallback to static data if no real data available
   const dataIn  = months.length > 0 ? months.map(m => monthMap[m].in)  : [60, 80, 50, 90, 70, 40, 85];
   const dataOut = months.length > 0 ? months.map(m => monthMap[m].out) : [40, 30, 70, 20, 50, 30, 60];
-  const labels  = months.length > 0 ? months.map(m => { const [y, mo] = m.split('-'); return new Date(y, mo - 1).toLocaleString('en', { month: 'short' }); }) : [];
+  const labels  = months.length > 0 ? months.map(m => { const [y, mo] = m.split('-'); return new Date(y, mo - 1, 15).toLocaleString('en', { month: 'short' }); }) : [];
 
   const W = container.clientWidth || 500;
   const H = 200;
