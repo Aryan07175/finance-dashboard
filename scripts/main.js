@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Derived metrics for portfolio from dashboard metrics
     portfolioMetrics = [
-      metricsData.metrics[0], // Total Balance
+      { ...metricsData.metrics[0] }, // Total Balance
       { title: "Day's Gain", value: '+$1,423.50', trend: 'up', trendValue: '1.16%', trendText: 'today', iconClass: 'ph-trend-up', colorClass: 'green' },
       { title: 'Total Return', value: '+$18,240.00', trend: 'up', trendValue: '17.2%', trendText: 'all time', iconClass: 'ph-chart-line-up', colorClass: 'purple' },
     ];
