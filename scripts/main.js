@@ -1119,7 +1119,7 @@ function initPreferences() {
   const exportCsvBtn = document.getElementById('export-csv-btn');
   if (exportCsvBtn) {
     exportCsvBtn.addEventListener('click', () => {
-      if (!allTransactions.length) { showToast('No transactions to export.', 'error'); return; }
+      if (!txFiltered.length) { showToast('No transactions to export.', 'error'); return; }
       const headers = ['ID', 'Name', 'Merchant', 'Category', 'Date', 'Amount', 'Status'];
       // H5 FIX: RFC-4180 compliant CSV escaping — wrap fields in quotes and escape inner quotes
       const escapeCSV = (val) => {
@@ -1130,7 +1130,7 @@ function initPreferences() {
         }
         return str;
       };
-      const rows = allTransactions.map(t =>
+      const rows = txFiltered.map(t =>
         [t.id, t.name, t.merchant, t.category, t.date, t.amount, t.status].map(escapeCSV).join(','));
       const csv = [headers.join(','), ...rows].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
