@@ -1074,11 +1074,61 @@ function initPreferences() {
     });
   }
 
-  // M3 FIX (v2): target by ID — class selector can match other .btn-primary buttons
   const sendMoneyBtn = document.getElementById('send-money-btn');
-  if (sendMoneyBtn) {
+  const sendModal = document.getElementById('send-money-modal');
+  const closeSendModal = document.getElementById('close-send-modal');
+  const cancelSendModal = document.getElementById('cancel-send-modal');
+  const sendMoneyForm = document.getElementById('send-money-form');
+  const submitSendMoney = document.getElementById('submit-send-money');
+
+  const closeAndResetModal = () => {
+    if (sendModal) sendModal.style.display = 'none';
+    if (sendMoneyForm) sendMoneyForm.reset();
+  };
+
+  if (sendMoneyBtn && sendModal) {
     sendMoneyBtn.addEventListener('click', () => {
-      showToast('Send Money feature coming soon! Use your bank app to transfer funds.', 'info');
+      sendModal.style.display = 'flex';
+    });
+    
+    closeSendModal.addEventListener('click', closeAndResetModal);
+    cancelSendModal.addEventListener('click', closeAndResetModal);
+    
+    sendMoneyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const recipientName = document.getElementById('send-recipient').value;
+      const amount = document.getElementById('send-amount').value;
+      const category = document.getElementById('send-category').value;
+      const note = document.getElementById('send-note').value;
+      
+      submitSendMoney.disabled = true;
+      submitSendMoney.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending...';
+      
+      try {
+        const newTx = await api.sendMoney({ recipientName, amount, category, note });
+        
+        // Add to main array
+        allTransactions.unshift(newTx);
+        
+        // Update Filters/Tables page
+        applyTxFilters(); 
+        
+        // Update Dashboard if we're on it (or globally refresh data)
+        const dateRange = document.getElementById('date-range-label')?.textContent || 'Last 30 Days';
+        const filteredForDash = filterTransactionsByRange(allTransactions, dateRange);
+        updateDashboardMetrics(filteredForDash);
+        renderCashFlowChart(filteredForDash);
+        renderRecentTransactions(filteredForDash);
+        
+        showToast('✓ Money sent successfully!');
+        closeAndResetModal();
+      } catch (err) {
+        showToast(`Failed to send money: ${err.message}`, 'error');
+      } finally {
+        submitSendMoney.disabled = false;
+        submitSendMoney.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Send';
+      }
     });
   }
 
