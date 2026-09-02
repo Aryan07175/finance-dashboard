@@ -52,7 +52,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
       metrics: [
         {
           title: 'Net Balance',
-          value: `$${balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
+          value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance),
           trend: balance >= 0 ? 'up' : 'down',
           trendValue: '2.5% (est.)',
           trendText: 'vs last month',
@@ -61,7 +61,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
         },
         {
           title: 'Total Income',
-          value: `$${income.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
+          value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(income),
           trend: 'up',
           trendValue: '12.4% (est.)',
           trendText: 'vs last month',
@@ -70,7 +70,7 @@ app.get('/api/dashboard/metrics', async (req, res) => {
         },
         {
           title: 'Total Expenses',
-          value: `$${expenses.toLocaleString('en-US', {minimumFractionDigits: 2})}`,
+          value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(expenses),
           trend: 'down',
           trendValue: '4.1% (est.)',
           trendText: 'vs last month',
