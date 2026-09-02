@@ -105,6 +105,39 @@ app.get('/api/transactions', async (req, res) => {
   }
 });
 
+app.post('/api/transactions/send', async (req, res) => {
+  try {
+    const { recipientName, amount, category, note } = req.body;
+    if (!recipientName || !amount) {
+      return res.status(400).json({ error: 'Missing recipient or amount' });
+    }
+
+    const now = new Date();
+    const dateStr = now.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(',', '');
+    const newId = `tx_${Date.now()}`;
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        'INSERT INTO transactions (id, name, merchant, category, date, amount, status, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [newId, 'Money Transfer', recipientName, category || 'Transfer', dateStr, -parsedAmount, 'Completed', 'ph-paper-plane-tilt'],
+        function (err) {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
+
+    const rows = await queryAll('SELECT * FROM transactions WHERE id = ?', [newId]);
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 3. Portfolio
 app.get('/api/portfolio', async (req, res) => {
   try {
