@@ -798,7 +798,7 @@ function applyTxFilters() {
   const catFilter = document.getElementById('tx-category-filter')?.value || 'all';
 
   txFiltered = allTransactions.filter(tx => {
-    const matchSearch = tx.name.toLowerCase().includes(search) || tx.merchant.toLowerCase().includes(search) || tx.category.toLowerCase().includes(search);
+    const matchSearch = (tx.name || '').toLowerCase().includes(search) || (tx.merchant || '').toLowerCase().includes(search) || (tx.category || '').toLowerCase().includes(search);
     const matchType = typeFilter === 'all' || (typeFilter === 'income' ? tx.amount > 0 : tx.amount < 0);
     const matchCat = catFilter === 'all' || tx.category === catFilter;
     return matchSearch && matchType && matchCat;
