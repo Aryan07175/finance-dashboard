@@ -674,6 +674,49 @@
           </div>
         </div>
       </div>
+
+      <!-- Send Money Modal -->
+      <div id="send-money-modal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title">Send Money</h2>
+            <button class="btn-icon" id="close-send-modal"><i class="ph ph-x"></i></button>
+          </div>
+          <div class="modal-body">
+            <form id="send-money-form">
+              <div class="form-grid">
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="send-recipient">Recipient Name</label>
+                  <input type="text" id="send-recipient" class="form-input" placeholder="e.g. John Doe" required>
+                </div>
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="send-amount">Amount</label>
+                  <input type="number" id="send-amount" class="form-input" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="send-category">Category</label>
+                  <select id="send-category" class="form-input filter-select">
+                    <option value="Transfer">Transfer</option>
+                    <option value="Gift">Gift</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Payment">Payment</option>
+                  </select>
+                </div>
+                <div class="form-field form-field-full">
+                  <label class="form-label" for="send-note">Note (Optional)</label>
+                  <input type="text" id="send-note" class="form-input" placeholder="What's this for?">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancel-send-modal">Cancel</button>
+            <button type="submit" class="btn-primary" id="submit-send-money" form="send-money-form">
+              <i class="ph ph-paper-plane-tilt"></i> Send
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
