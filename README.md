@@ -6,6 +6,7 @@ A modern, responsive, and feature-rich personal finance dashboard application. I
 
 - **Dashboard:** Overview of key financial metrics including Net Balance, Total Income, and Total Expenses with trend indicators.
 - **Transactions Management:** View, search, and filter transactions by date range, type (income/expense), and category. Includes client-side pagination.
+- **Send Money:** Transfer funds seamlessly through a dedicated modal interface, instantly reflecting balance and transaction history.
 - **Portfolio Tracking:** Visualize your asset allocation (Stocks, Crypto, Cash, Real Estate, Bonds) and track holding performance.
 - **Card Management:** Manage your physical and virtual credit/debit cards in a sleek UI.
 - **Settings & Preferences:** Configure user profile details, notification preferences (Email, SMS, Push), and view active device sessions.
@@ -96,6 +97,7 @@ The backend provides a RESTful JSON API:
 
 - `GET /api/dashboard/metrics` - Fetch high-level financial metrics.
 - `GET /api/transactions` - Retrieve all transactions (ordered newest first).
+- `POST /api/transactions/send` - Send money to a recipient (creates a new transaction and updates balance).
 - `GET /api/portfolio` - Get asset allocation and holdings data.
 - `GET /api/cards` - List user credit and debit cards.
 - `GET /api/sessions` - List active user sessions and devices.
